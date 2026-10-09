@@ -21,7 +21,9 @@
       "ongoing": true,
       "link": "",
       "repo": "",
-      "images": []
+      "images": [],
+      "type": "other",
+      "details": {}
     },
     {
       "id": "sark-douls",
@@ -39,7 +41,22 @@
         "images/sark-douls-mv0ufxg8vow.jpg",
         "images/sark-douls-mv0ufxfmxwz.jpg",
         "images/sark-douls-mv0ug9g80zk.jpg"
-      ]
+      ],
+      "type": "game",
+      "details": {
+        "genre": "Action RPG",
+        "mode": "Multijoueur"
+      }
     }
-  ]
+  ],
+  "cv": {
+    "headline": "",
+    "summary": "",
+    "pdf": "",
+    "experience": [],
+    "education": [],
+    "skills": [],
+    "languages": [],
+    "interests": []
+  }
 }
