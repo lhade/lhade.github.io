@@ -1,0 +1,34 @@
+{
+  "profile": {
+    "name": "Lhade",
+    "tagline": "Projets, expériences et travaux en cours.",
+    "bio": "Présentez-vous en quelques lignes : ce que vous faites, ce qui vous intéresse, ce que vous cherchez.\n\nLaissez une ligne vide pour créer un nouveau paragraphe.",
+    "links": [
+      { "label": "GitHub", "url": "https://github.com/lhade" }
+    ]
+  },
+  "projects": [
+    {
+      "id": "exemple-site-web",
+      "title": "Exemple : site web",
+      "year": "2026",
+      "summary": "Une phrase qui résume le projet.",
+      "description": "Décrivez ici ce sur quoi vous avez travaillé : le contexte, votre rôle, les choix techniques, le résultat.\n\nVous pouvez écrire plusieurs paragraphes.",
+      "tags": ["Web", "Design"],
+      "link": "",
+      "repo": "",
+      "images": []
+    },
+    {
+      "id": "exemple-application",
+      "title": "Exemple : application",
+      "year": "2025",
+      "summary": "Un deuxième projet pour voir le rendu de la liste.",
+      "description": "Supprimez ces deux exemples depuis la page Administration quand vous avez ajouté les vôtres.",
+      "tags": ["Application"],
+      "link": "",
+      "repo": "",
+      "images": []
+    }
+  ]
+}

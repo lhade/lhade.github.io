@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Administration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F5F2; --surface:#FFFFFF; --ink:#1C2326; --muted:#5C676A; --line:#D8DCD6; --accent:#2E5E5A; --danger:#9B2C2C; --ok:#2E6B3F;
+  --sans:"Familjen Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Source Serif 4",Georgia,serif;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#121719; --surface:#1A2124; --ink:#E7EBEA; --muted:#93A0A2; --line:#273033; --accent:#8FC4BE; --danger:#E08A8A; --ok:#8CC9A0}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:1rem;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-underline-offset:.2em}
+a:hover{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+.wrap{max-width:1100px;margin:0 auto;padding:clamp(1rem,3vw,2.5rem)}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:1.5rem}
+.top h1{margin:0;font-weight:600;font-size:1.75rem;letter-spacing:-.025em}
+
+details{border:1px solid var(--line);border-radius:6px;padding:.75rem 1rem;margin-bottom:1.5rem;background:var(--surface)}
+summary{cursor:pointer;font-weight:500}
+details .hint{margin:.75rem 0}
+
+.cols{display:grid;grid-template-columns:240px minmax(0,1fr);gap:2rem;align-items:start}
+.side{position:sticky;top:1rem}
+.side h2{font-size:.95rem;font-weight:500;color:var(--muted);margin:1.25rem 0 .4rem}
+.side ul{list-style:none;margin:0 0 .75rem;padding:0}
+.side li button, #goprofile{width:100%;text-align:left;font:inherit;padding:.4rem .6rem;border:0;border-radius:4px;background:none;color:var(--ink);cursor:pointer}
+.side li button:hover, #goprofile:hover{background:var(--surface)}
+.side [aria-current="true"]{background:var(--surface);font-weight:600;box-shadow:inset 3px 0 0 var(--accent)}
+
+#editor{display:grid;gap:1rem}
+#editor h2{margin:0;font-size:1.4rem;font-weight:600;letter-spacing:-.02em}
+label{display:grid;gap:.3rem;font-size:.92rem;color:var(--muted)}
+input,textarea{font:inherit;font-family:var(--serif);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:.55rem .7rem;width:100%}
+input[type=file]{font-family:var(--sans);font-size:.9rem;padding:.45rem}
+textarea{line-height:1.55;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid2 label:first-child:has(input[data-f="year"]){grid-column:auto}
+fieldset{border:1px solid var(--line);border-radius:6px;padding:1rem;margin:0;display:grid;gap:.75rem}
+legend{padding:0 .4rem;color:var(--muted);font-size:.92rem}
+.imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.75rem}
+figure{margin:0;display:grid;gap:.3rem;font-size:.82rem;color:var(--muted)}
+figure img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:4px;background:var(--surface)}
+figure div{display:flex;gap:.3rem;flex-wrap:wrap}
+figcaption{min-height:1.2em}
+
+button{font:inherit;cursor:pointer}
+figure button,.btn{font-size:.85rem;padding:.25rem .6rem;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink)}
+figure button:hover,.btn:hover{border-color:var(--muted)}
+.primary{font-size:.95rem;padding:.5rem 1.2rem;border:1px solid var(--ink);border-radius:999px;background:var(--ink);color:var(--bg);font-weight:500}
+.primary:disabled{opacity:.5;cursor:wait}
+.danger{justify-self:start;font-size:.9rem;padding:.4rem .9rem;border:1px solid var(--danger);border-radius:999px;background:transparent;color:var(--danger)}
+.hint{color:var(--muted);font-size:.9rem;margin:0}
+.add{width:100%;margin-top:.25rem;padding:.45rem .8rem;border:1px dashed var(--muted);border-radius:4px;background:none;color:var(--ink)}
+.add:hover{background:var(--surface)}
+
+.bar{position:sticky;bottom:0;display:flex;gap:.75rem;align-items:center;justify-content:flex-end;padding:.9rem 0;margin-top:2rem;background:var(--bg);border-top:1px solid var(--line)}
+#status{margin-right:auto;font-size:.92rem;color:var(--muted)}
+#status.err{color:var(--danger)}
+#status.ok{color:var(--ok)}
+
+@media (max-width:760px){
+  .cols{grid-template-columns:1fr}
+  .side{position:static}
+  .grid2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Administration</h1>
+    <a href="./">Voir le site</a>
+  </header>
+
+  <details id="conn">
+    <summary>Connexion à GitHub</summary>
+    <p class="hint">Pour publier, créez un token : GitHub, Settings, Developer settings, Personal access tokens, Fine-grained tokens. Limitez-le au dépôt <b>lhade.github.io</b> avec la permission <b>Contents : Read and write</b>. Il reste uniquement dans le navigateur de cet appareil.</p>
+    <div class="grid2">
+      <label>Dépôt<input id="repo" value="lhade/lhade.github.io" autocomplete="off"></label>
+      <label>Token<input id="token" type="password" placeholder="github_pat_…" autocomplete="off"></label>
+    </div>
+    <p><button class="btn" id="saveconn">Enregistrer et recharger</button></p>
+  </details>
+
+  <div class="cols">
+    <nav class="side" id="nav" aria-label="Sections">
+      <button id="goprofile" data-view="profile">Profil</button>
+      <h2>Projets</h2>
+      <ul id="plist"></ul>
+      <button class="add" id="new">Ajouter un projet</button>
+    </nav>
+    <section id="editor" aria-live="polite"></section>
+  </div>
+
+  <div class="bar">
+    <span id="status" role="status"></span>
+    <button class="btn" id="copy">Copier le JSON</button>
+    <button class="primary" id="publish">Publier</button>
+  </div>
+</div>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const slug = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "projet";
+const b64decode = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g, "")), c => c.charCodeAt(0)));
+const b64encode = s => { let bin = ""; new TextEncoder().encode(s).forEach(x => bin += String.fromCharCode(x)); return btoa(bin); };
+
+let cfg = { repo: "lhade/lhade.github.io", token: "" };
+try { cfg = { ...cfg, ...JSON.parse(localStorage.getItem("portfolio-admin") || "{}") }; } catch {}
+
+let data = { profile: { name: "", tagline: "", bio: "", links: [] }, projects: [] };
+let view = "profile", dirty = false;
+const pending = {};          // images ajoutées localement : chemin -> { b64, url, done }
+const toDelete = new Set();  // images à supprimer du dépôt à la publication
+
+const cur = () => data.projects.find(p => p.id === view);
+function setStatus(msg, kind = "") { const s = $("#status"); s.textContent = msg; s.className = kind; }
+function markDirty() { dirty = true; setStatus("Modifications non publiées."); }
+window.addEventListener("beforeunload", e => { if (dirty) e.preventDefault(); });
+
+/* ---------- GitHub API ---------- */
+async function gh(path, opt = {}) {
+  const r = await fetch("https://api.github.com" + path, {
+    ...opt,
+    headers: { Authorization: "Bearer " + cfg.token, Accept: "application/vnd.github+json", "Content-Type": "application/json" }
+  });
+  if (!r.ok) {
+    let m = ""; try { m = (await r.json()).message; } catch {}
+    const e = new Error(r.status + " " + m); e.status = r.status; throw e;
+  }
+  return r.json();
+}
+async function put(path, content, message, checkSha = true) {
+  let sha;
+  if (checkSha) {
+    try { sha = (await gh(`/repos/${cfg.repo}/contents/${path}`)).sha; }
+    catch (e) { if (e.status !== 404) throw e; }
+  }
+  return gh(`/repos/${cfg.repo}/contents/${path}`, { method: "PUT", body: JSON.stringify({ message, content, ...(sha ? { sha } : {}) }) });
+}
+
+/* ---------- Chargement ---------- */
+async function load() {
+  try {
+    if (cfg.token) {
+      const f = await gh(`/repos/${cfg.repo}/contents/projects.json`);
+      data = JSON.parse(b64decode(f.content));
+      setStatus("Données chargées depuis GitHub.");
+    } else {
+      const r = await fetch("projects.json?t=" + Date.now());
+      data = await r.json();
+      setStatus("Lecture seule : ajoutez un token pour publier.");
+    }
+  } catch (e) {
+    setStatus("Chargement impossible : " + e.message, "err");
+  }
+  data.profile = data.profile || {};
+  data.projects = data.projects || [];
+  data.projects.forEach(p => { p.id = p.id || slug(p.title || ""); });
+  renderSide(); renderEditor();
+}
+
+/* ---------- Rendu ---------- */
+function renderSide() {
+  $("#goprofile").setAttribute("aria-current", view === "profile");
+  $("#plist").innerHTML = data.projects.map(p =>
+    `<li><button data-view="${esc(p.id)}" aria-current="${view === p.id}">${esc(p.title || p.id)}</button></li>`).join("");
+}
+
+function renderEditor() {
+  const ed = $("#editor");
+  if (view === "profile") {
+    const p = data.profile;
+    ed.innerHTML = `
+      <h2>Profil</h2>
+      <label>Nom<input data-f="name" value="${esc(p.name)}"></label>
+      <label>Accroche<input data-f="tagline" value="${esc(p.tagline)}"></label>
+      <label>Présentation<textarea data-f="bio" rows="7">${esc(p.bio)}</textarea></label>
+      <label>Liens (un par ligne, sous la forme Libellé | https://…)
+        <textarea data-f="links" rows="4">${esc((p.links || []).map(l => l.label + " | " + l.url).join("\n"))}</textarea></label>`;
+    return;
+  }
+  const p = cur();
+  if (!p) { ed.innerHTML = '<p class="hint">Choisissez une section dans la liste.</p>'; return; }
+  ed.innerHTML = `
+    <h2>${esc(p.title || "Projet")}</h2>
+    <div class="grid2">
+      <label>Titre<input data-f="title" value="${esc(p.title)}"></label>
+      <label>Année<input data-f="year" value="${esc(p.year)}" inputmode="numeric"></label>
+    </div>
+    <label>Résumé (une phrase)<input data-f="summary" value="${esc(p.summary)}"></label>
+    <label>Description<textarea data-f="description" rows="10">${esc(p.description)}</textarea></label>
+    <label>Mots-clés (séparés par des virgules)<input data-f="tags" value="${esc((p.tags || []).join(", "))}"></label>
+    <div class="grid2">
+      <label>Lien du projet<input data-f="link" value="${esc(p.link)}" placeholder="https://…"></label>
+      <label>Code source<input data-f="repo" value="${esc(p.repo)}" placeholder="https://github.com/…"></label>
+    </div>
+    <fieldset>
+      <legend>Images</legend>
+      <div id="imgs"></div>
+      <label>Ajouter des images<input type="file" id="file" accept="image/*" multiple></label>
+      <p class="hint">Les images sont réduites à 1600 px de large au maximum avant l'envoi. La première sert de couverture.</p>
+    </fieldset>
+    <button class="danger" data-act="del">Supprimer ce projet</button>`;
+  renderImages();
+}
+
+function renderImages() {
+  const p = cur(), box = $("#imgs");
+  if (!p || !box) return;
+  const list = p.images || [];
+  box.innerHTML = list.length
+    ? `<div class="imgs">${list.map((s, i) => `
+        <figure>
+          <img src="${esc(pending[s]?.url || s)}" alt="">
+          <figcaption>${i === 0 ? "Couverture" : ""}</figcaption>
+          <div>${i ? `<button data-act="first" data-i="${i}">En premier</button>` : ""}<button data-act="rm" data-i="${i}">Retirer</button></div>
+        </figure>`).join("")}</div>`
+    : '<p class="hint">Aucune image pour l\'instant.</p>';
+}
+
+/* ---------- Images ---------- */
+async function prepImage(file) {
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas");
+  c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  const ctx = c.getContext("2d");
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height);
+  ctx.drawImage(bmp, 0, 0, c.width, c.height);
+  const blob = await new Promise(r => c.toBlob(r, "image/jpeg", .86));
+  const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result.split(",")[1]); fr.readAsDataURL(blob); });
+  return { b64, url: URL.createObjectURL(blob) };
+}
+function dropImage(path) {
+  const im = pending[path];
+  if (im) { URL.revokeObjectURL(im.url); delete pending[path]; if (im.done) toDelete.add(path); }
+  else toDelete.add(path);
+}
+
+/* ---------- Événements ---------- */
+$("#nav").addEventListener("click", e => {
+  const b = e.target.closest("[data-view]"); if (!b) return;
+  view = b.dataset.view; renderSide(); renderEditor();
+});
+
+$("#new").addEventListener("click", () => {
+  const t = prompt("Titre du projet ?");
+  if (!t || !t.trim()) return;
+  let id = slug(t), n = 2;
+  while (data.projects.some(p => p.id === id)) id = slug(t) + "-" + n++;
+  data.projects.unshift({ id, title: t.trim(), year: String(new Date().getFullYear()), summary: "", description: "", tags: [], link: "", repo: "", images: [] });
+  view = id; markDirty(); renderSide(); renderEditor();
+});
+
+$("#editor").addEventListener("input", e => {
+  const f = e.target.dataset.f; if (!f) return;
+  const v = e.target.value;
+  if (view === "profile") {
+    data.profile[f] = f === "links"
+      ? v.split("\n").map(l => l.split("|").map(s => s.trim())).filter(a => a[0] && a[1]).map(([label, url]) => ({ label, url }))
+      : v;
+  } else {
+    const p = cur();
+    p[f] = f === "tags" ? v.split(",").map(s => s.trim()).filter(Boolean) : v;
+    if (f === "title") renderSide();
+  }
+  markDirty();
+});
+
+$("#editor").addEventListener("change", async e => {
+  if (e.target.id !== "file") return;
+  const p = cur(); if (!p) return;
+  p.images = p.images || [];
+  for (const file of e.target.files) {
+    try {
+      const im = await prepImage(file);
+      const path = `images/${p.id}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}.jpg`;
+      pending[path] = im;
+      p.images.push(path);
+    } catch { setStatus("Image illisible : " + file.name, "err"); return; }
+  }
+  e.target.value = "";
+  markDirty(); renderImages();
+});
+
+$("#editor").addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const p = cur(); if (!p) return;
+  const i = +b.dataset.i;
+  if (b.dataset.act === "rm") { dropImage(p.images[i]); p.images.splice(i, 1); }
+  else if (b.dataset.act === "first") { p.images.unshift(...p.images.splice(i, 1)); }
+  else if (b.dataset.act === "del") {
+    if (!confirm("Supprimer ce projet et ses images ?")) return;
+    (p.images || []).forEach(dropImage);
+    data.projects = data.projects.filter(x => x !== p);
+    view = "profile"; markDirty(); renderSide(); renderEditor();
+    return;
+  }
+  markDirty(); renderImages();
+});
+
+$("#saveconn").addEventListener("click", () => {
+  cfg.repo = $("#repo").value.trim() || cfg.repo;
+  if ($("#token").value.trim()) cfg.token = $("#token").value.trim();
+  localStorage.setItem("portfolio-admin", JSON.stringify(cfg));
+  $("#token").value = "";
+  load();
+});
+
+$("#copy").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText(JSON.stringify(data, null, 2) + "\n"); setStatus("JSON copié. Les images ajoutées ne sont envoyées qu'avec « Publier ».", "ok"); }
+  catch { setStatus("Copie impossible depuis ce navigateur.", "err"); }
+});
+
+$("#publish").addEventListener("click", async () => {
+  if (!cfg.token) { $("#conn").open = true; setStatus("Ajoutez d'abord votre token GitHub.", "err"); return; }
+  const btn = $("#publish"); btn.disabled = true;
+  try {
+    const used = new Set(data.projects.flatMap(p => p.images || []));
+    const up = Object.keys(pending).filter(p => used.has(p) && !pending[p].done);
+    for (let i = 0; i < up.length; i++) {
+      setStatus(`Envoi des images (${i + 1}/${up.length})…`);
+      await put(up[i], pending[up[i]].b64, "Ajout d'une image", false);
+      pending[up[i]].done = true;
+    }
+    for (const path of [...toDelete]) {
+      if (used.has(path)) { toDelete.delete(path); continue; }
+      try {
+        const f = await gh(`/repos/${cfg.repo}/contents/${path}`);
+        await gh(`/repos/${cfg.repo}/contents/${path}`, { method: "DELETE", body: JSON.stringify({ message: "Suppression d'une image", sha: f.sha }) });
+      } catch (e) { if (e.status !== 404) throw e; }
+      toDelete.delete(path);
+    }
+    setStatus("Publication des données…");
+    await put("projects.json", b64encode(JSON.stringify(data, null, 2) + "\n"), "Mise à jour du portfolio");
+    dirty = false;
+    setStatus("Publié. Le site se met à jour en une minute environ.", "ok");
+  } catch (e) {
+    setStatus("Échec de la publication : " + e.message, "err");
+  } finally { btn.disabled = false; }
+});
+
+load();
+})();
+</script>
+</body>
+</html>
