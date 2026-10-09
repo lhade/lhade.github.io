@@ -66,8 +66,10 @@
     "pdf": "",
     "experience": [
       {
-        "role": "test",
-        "org": "Test"
+        "role": "Alternant développeur",
+        "org": "Test",
+        "start": "2021",
+        "end": "2024"
       }
     ],
     "education": [
@@ -80,7 +82,19 @@
         "label": "test"
       }
     ],
-    "languages": [],
-    "interests": []
+    "languages": [
+      {
+        "name": "Français ",
+        "level": "Natif"
+      },
+      {
+        "name": "Anglais "
+      }
+    ],
+    "interests": [
+      "Jeux vidéos",
+      "Lecture",
+      "technologie"
+    ]
   }
 }
