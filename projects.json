@@ -30,7 +30,8 @@
       "summary": "Un action RPG dynamique jouable en multijoueur",
       "description": "Vous êtes un héros de bas rang originaire de la campagne, où vous participez à des quêtes et réglez les problèmes plutôt modestes des habitants du coin. \nEmpli d’ambition, et convaincu que vous vallez bien plus qu’une vie dans la diagonale du vide du royaume de Dragonolia vous entreprenez un voyage vers la base des Héros du Royaume, les plus célèbres et plus puissants du monde et chargés d’éliminer la menace des Douls, de perfides démons, afin de rejoindre leurs rangs avec éventuellement votre cousin (J2) un peu agaçant mais aux compétences certaines… normalement.\nCependant, votre candidature n’a pas été retenue et ils sont allés éliminer Sark, le roi des Douls, sans vous… Personne ne vous l’a jamais dit mais vous êtes hautement susceptible, leur sentence pour vous avoir humilié de la sorte sera la mort dans leur propre base que vous prendrez d’assaut de nuit. Susceptible et aussi pas vaillant pour un sou, profiter de leur sommeil pendant la nuit sera une partie essentielle de votre plan d’attaque",
       "tags": [
-        "Jeu"
+        "Jeu vidéo",
+        "c#"
       ],
       "link": "",
       "repo": "",
