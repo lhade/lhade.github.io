@@ -67,9 +67,17 @@
     "experience": [
       {
         "role": "Alternant développeur",
-        "org": "Test",
+        "org": "HDTechnology",
         "start": "2021",
-        "end": "2024"
+        "end": "2024",
+        "place": "Bron",
+        "description": [
+          "Rapports automatisés",
+          "Création webapp",
+          "Scripts",
+          "Site internet",
+          "Procédures stockées (SQL?"
+        ]
       }
     ],
     "education": [
@@ -79,7 +87,19 @@
     ],
     "skills": [
       {
-        "label": "test"
+        "label": "test",
+        "items": [
+          "Test1",
+          "test2",
+          "test3"
+        ]
+      },
+      {
+        "label": "Test catégorie ",
+        "items": [
+          "Test1",
+          "g4"
+        ]
       }
     ],
     "languages": [
