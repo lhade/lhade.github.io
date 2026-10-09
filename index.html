@@ -20,6 +20,7 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth}
 ::selection{background:var(--accent);color:var(--bg)}
 body{margin:0;background-color:var(--bg);background-image:radial-gradient(var(--dot) 1px,transparent 1px);background-size:24px 24px;color:var(--ink);font-family:var(--body);font-size:1.0625rem;line-height:1.65;-webkit-font-smoothing:antialiased}
@@ -113,6 +114,51 @@ dialog[open]{animation:pop .22s ease-out}
 .dlg-links a{padding:.4rem 1rem;border:1px solid var(--line);border-radius:4px;text-decoration:none}
 .dlg-links a:hover{border-color:var(--accent)}
 
+
+/* onglets projets / cv */
+.views{display:flex;gap:1.5rem;margin:0 0 1.75rem;border-bottom:1px solid var(--line);font-family:var(--display);font-size:.9rem}
+.views button{font:inherit;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:.4rem 0;color:var(--muted);cursor:pointer}
+.views button::before{content:"./";color:var(--c)}
+.views button:hover{color:var(--ink)}
+.views button[aria-current="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.views button[aria-current="true"]::before{color:var(--accent)}
+.filters .sep{width:1px;background:var(--line);margin:0 .25rem}
+
+/* type de projet */
+.kind{font-family:var(--display);font-size:.8rem;color:var(--muted)}
+.kind[data-t="game"]{color:var(--k)} .kind[data-t="app"]{color:var(--p)}
+
+/* sections typées de la fiche */
+.sect{display:grid;gap:.5rem}
+.sect h3{margin:0;font-family:var(--display);font-weight:500;font-size:.85rem;color:var(--muted)}
+.sect h3::before{content:"## ";color:var(--accent)}
+.sect.lead .prose p{font-size:1.15rem}
+.list{margin:0;padding:0;list-style:none;display:grid;gap:.3rem;max-width:66ch}
+.list li{position:relative;padding-left:1.3rem}
+.list li::before{content:"-";position:absolute;left:.3rem;color:var(--accent);font-family:var(--display)}
+
+/* cv */
+.cv-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:1.25rem 0 0;font-family:var(--display);font-size:.88rem}
+.cv-actions a,.cv-actions button{font:inherit;padding:.4rem 1rem;border:1px solid var(--line);border-radius:4px;background:transparent;color:var(--ink);text-decoration:none;cursor:pointer}
+.cv-actions a:hover,.cv-actions button:hover{border-color:var(--accent);color:var(--accent)}
+.cv .tagline{margin-bottom:1rem}
+.cv-h{margin:2.5rem 0 .9rem;font-family:var(--display);font-weight:500;font-size:.95rem}
+.cv-h::before{content:"// ";color:var(--c)}
+.cv-list .cv-item{display:grid;grid-template-columns:200px minmax(0,1fr);gap:1.75rem;padding:1.4rem 0;border-top:1px solid var(--line);break-inside:avoid}
+.cv-list .cv-item:last-child{border-bottom:1px solid var(--line)}
+.cv-when{font-family:var(--display);font-size:.85rem;color:var(--muted)}
+.cv-when.lab{color:var(--ink)}
+.cv-item h3{margin:0;font-family:var(--display);font-weight:500;font-size:1.05rem;line-height:1.3}
+.cv-sub{margin:.2rem 0 .6rem;color:var(--muted)}
+.cv-item .arr{margin:0;font-size:.85rem}
+@media (max-width:600px){.cv-list .cv-item{grid-template-columns:1fr;gap:.4rem}}
+@media print{
+  :root{--bg:#fff;--surface:#fff;--line:#d5d9e0;--ink:#111;--muted:#444;--c:#666;--accent:#0b6b70;--k:#5b44a8;--s:#2f6b1a;--n:#a24d12;--p:#1f5fa8}
+  body{background:#fff;font-size:10.5pt}
+  .layout{display:block;padding:0}
+  aside{position:static;min-height:0;margin-bottom:1rem}
+  aside .bio,aside footer,.views,.filters,.cv-actions,dialog{display:none!important}
+}
 @media (max-width:900px){
   .row::before{display:none}
 }
@@ -141,13 +187,16 @@ dialog[open]{animation:pop .22s ease-out}
   </aside>
 
   <main>
-    <nav class="filters" id="filters" aria-label="Filtrer par mot-clé" hidden></nav>
+    <nav class="views" id="views" aria-label="Sections" hidden><button data-view="projects" aria-current="true">projets</button><button data-view="cv" aria-current="false">cv</button></nav>
+    <nav class="filters" id="filters" aria-label="Filtrer" hidden></nav>
     <div id="list"><p class="empty">// chargement…</p></div>
+    <div id="cv" class="cv" hidden></div>
   </main>
 </div>
 
 <dialog id="dlg" aria-labelledby="dlg-title"><div id="dlg-inner"></div></dialog>
 
+<script src="schema.js"></script>
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -160,8 +209,22 @@ const arr = a => `<span class="pu">[</span>${a.map(t => `<span class="s">"${esc(
 const live = '<span class="live"><i></i>en cours</span>';
 const state = p => p.ongoing ? live : '<span class="done">terminé</span>';
 
+const bullets = a => { const l = (Array.isArray(a) ? a : String(a || "").split("\n")).map(x => String(x).trim()).filter(Boolean); return l.length ? `<ul class="list">${l.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""; };
+const csv = s => (Array.isArray(s) ? s : String(s || "").split(",")).map(x => String(x).trim()).filter(Boolean);
+
+/* types de projets (schema.js) */
+const TYPES = (window.SCHEMA || {}).types || {};
+const OTHER = { plural: "Autres", code: "projet", facts: [], sections: [{ key: "description", root: true, label: "Description", kind: "long" }] };
+const typeOf = p => TYPES[p.type] ? p.type : "other";
+const def = p => TYPES[typeOf(p)] || OTHER;
+const secVal = (p, s) => s.root ? p[s.key] : (p.details || {})[s.key];
+const section = (p, s) => {
+  const v = secVal(p, s), body = s.kind === "list" ? bullets(v) : paras(v);
+  return body ? `<section class="sect${s.lead ? " lead" : ""}"><h3>${esc(s.label)}</h3><div class="prose">${body}</div></section>` : "";
+};
+
 let data = { profile: {}, projects: [] };
-let activeTag = null;
+let activeTag = null, activeType = null, view = "projects";
 
 async function load() {
   try {
@@ -174,9 +237,11 @@ async function load() {
   }
   data.projects = (data.projects || []).slice().sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0));
   renderProfile();
-  renderFilters();
+  renderCV();
+  const h = decodeURIComponent(location.hash.slice(1));
+  setView(h === "cv" ? "cv" : "projects", false);
   renderList();
-  if (location.hash.length > 1) openProject(decodeURIComponent(location.hash.slice(1)));
+  if (h && h !== "cv") openProject(h);
 }
 
 function renderProfile() {
@@ -187,18 +252,35 @@ function renderProfile() {
   $("#contact").innerHTML = (p.links || []).map(l => `<li><span class="pr">$</span> <a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener">${esc(l.label)}</a></li>`).join("");
 }
 
+/* ---------- onglets ---------- */
+const hasCV = c => !!c && !!(c.headline || c.summary || c.pdf || ["experience", "education", "skills", "languages", "interests"].some(k => (c[k] || []).length));
+function setView(v, touch = true) {
+  view = v === "cv" && hasCV(data.cv) ? "cv" : "projects";
+  $("#views").hidden = !hasCV(data.cv);
+  document.querySelectorAll("#views button").forEach(b => b.setAttribute("aria-current", b.dataset.view === view));
+  $("#list").hidden = view !== "projects";
+  $("#cv").hidden = view !== "cv";
+  renderFilters();
+  if (touch) history.replaceState(null, "", view === "cv" ? "#cv" : location.pathname + location.search);
+}
+
+/* ---------- projets ---------- */
 function renderFilters() {
+  const types = [...new Set(data.projects.map(typeOf))];
   const tags = [...new Set(data.projects.flatMap(p => p.tags || []))].sort((a, b) => a.localeCompare(b, "fr"));
+  const showTypes = types.length > 1;
   const nav = $("#filters");
-  nav.hidden = tags.length < 2;
-  nav.innerHTML = ["Tout", ...tags].map((t, i) =>
-    `<button data-tag="${i ? esc(t) : ""}" aria-pressed="${(i ? t : null) === activeTag}">${i ? "<i>#</i>" : ""}${esc(t)}</button>`).join("");
+  nav.hidden = view !== "projects" || (!showTypes && tags.length < 2);
+  nav.innerHTML = `<button data-all aria-pressed="${!activeType && !activeTag}">Tout</button>`
+    + (showTypes ? types.map(t => `<button data-type="${esc(t)}" aria-pressed="${activeType === t}">${esc((TYPES[t] || OTHER).plural)}</button>`).join("") : "")
+    + (showTypes && tags.length ? '<span class="sep" aria-hidden="true"></span>' : "")
+    + tags.map(t => `<button data-tag="${esc(t)}" aria-pressed="${activeTag === t}"><i>#</i>${esc(t)}</button>`).join("");
 }
 
 function renderList() {
-  const items = data.projects.filter(p => !activeTag || (p.tags || []).includes(activeTag));
+  const items = data.projects.filter(p => (!activeTag || (p.tags || []).includes(activeTag)) && (!activeType || typeOf(p) === activeType));
   if (!items.length) {
-    $("#list").innerHTML = '<p class="empty">// Aucun projet pour l\'instant. Ajoutez-en depuis la page admin.</p>';
+    $("#list").innerHTML = `<p class="empty">${data.projects.length ? "// Aucun projet pour ce filtre." : "// Aucun projet pour l'instant. Ajoutez-en depuis la page admin."}</p>`;
     return;
   }
   $("#list").innerHTML = items.map(p => `
@@ -207,7 +289,7 @@ function renderList() {
       <div class="info">
         <div class="line">
           <h2><button data-id="${esc(p.id)}">${esc(p.title)}</button></h2>
-          <span class="side">${p.ongoing ? live : ""}${p.year ? `<span class="year">${esc(p.year)}</span>` : ""}</span>
+          <span class="side">${typeOf(p) !== "other" ? `<span class="kind" data-t="${typeOf(p)}">${esc(def(p).label.toLowerCase())}</span>` : ""}${p.ongoing ? live : ""}${p.year ? `<span class="year">${esc(p.year)}</span>` : ""}</span>
         </div>
         <p class="summary">${esc(p.summary)}</p>
         <p class="arr">${(p.tags || []).length ? arr(p.tags) : ""}</p>
@@ -218,15 +300,20 @@ function renderList() {
 function openProject(id) {
   const p = data.projects.find(x => x.id === id);
   if (!p) return;
-  const imgs = p.images || [];
+  const d = def(p), det = p.details || {}, imgs = p.images || [];
   const links = [p.link && ["Voir le projet", p.link], p.repo && ["Code source", p.repo]].filter(Boolean)
     .map(([t, u]) => `<a href="${esc(safeUrl(u))}" target="_blank" rel="noopener">${t}</a>`).join("");
   const props = [];
   if (p.year) props.push(["année", val(p.year)]);
+  d.facts.forEach(f => { const v = det[f.key]; if (v && String(v).trim()) props.push([f.name, f.list ? arr(csv(v)) : val(v)]); });
   if ((p.tags || []).length) props.push(["tags", arr(p.tags)]);
   const obj = props.length
-    ? `<pre class="obj"><code><span class="k">const</span> <span class="v">projet</span> <span class="pu">= {</span>\n${props.map(([k, v]) => `  <span class="p">${k}</span><span class="pu">:</span> ${v}`).join('<span class="pu">,</span>\n')}\n<span class="pu">};</span></code></pre>`
+    ? `<pre class="obj"><code><span class="k">const</span> <span class="v">${esc(d.code)}</span> <span class="pu">= {</span>\n${props.map(([k, v]) => `  <span class="p">${k}</span><span class="pu">:</span> ${v}`).join('<span class="pu">,</span>\n')}\n<span class="pu">};</span></code></pre>`
     : "";
+  const secs = d.sections.map(s => [s, section(p, s)]);
+  const lead = secs.filter(([s]) => s.lead).map(x => x[1]).join("");
+  let rest = secs.filter(([s]) => !s.lead).map(x => x[1]).join("");
+  if (!lead && !rest && p.summary) rest = `<div class="prose">${paras(p.summary)}</div>`;
   $("#dlg-inner").innerHTML = `
     <div class="bar">
       <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -236,18 +323,50 @@ function openProject(id) {
     <div class="dlg-body">
       <div class="dlg-head"><h2 id="dlg-title">${esc(p.title)}</h2>${state(p)}</div>
       ${obj}
+      ${lead}
       ${imgs.length ? `<div class="gallery"><img id="big" src="${esc(imgs[0])}" alt="${esc(p.title)}">${
         imgs.length > 1 ? `<div class="thumbs">${imgs.map((s, i) => `<button data-img="${esc(s)}" aria-label="Image ${i + 1}" aria-current="${i === 0}"><img src="${esc(s)}" alt=""></button>`).join("")}</div>` : ""}</div>` : ""}
-      <div class="prose">${paras(p.description || p.summary)}</div>
+      ${rest}
       ${links ? `<p class="dlg-links">${links}</p>` : ""}
     </div>`;
   $("#dlg").showModal();
   history.replaceState(null, "", "#" + encodeURIComponent(id));
 }
 
+/* ---------- cv ---------- */
+const dates = e => { const s = (e.start || "").trim(), t = e.current ? "présent" : (e.end || "").trim(); return s && t ? `${s} — ${t}` : s || t; };
+const cvEntry = (e, head, org) => {
+  const sub = [e[org], e.place].filter(Boolean).map(esc).join('<span class="pu"> · </span>');
+  return `<article class="cv-item"><div class="cv-when">${esc(dates(e))}${e.current ? `<div>${live}</div>` : ""}</div>
+    <div><h3>${esc(e[head])}</h3>${sub ? `<p class="cv-sub">${sub}</p>` : ""}${bullets(e.description)}</div></article>`;
+};
+const cvSec = (title, items, fn) => items.length ? `<section><h2 class="cv-h">${title}</h2><div class="cv-list">${items.map(fn).join("")}</div></section>` : "";
+
+function renderCV() {
+  const c = data.cv || {};
+  if (!hasCV(c)) { $("#cv").innerHTML = ""; return; }
+  const langs = (c.languages || []).filter(l => l.name);
+  $("#cv").innerHTML = `
+    <header>
+      ${c.headline ? `<p class="tagline">${esc(c.headline)}</p>` : ""}
+      ${c.summary ? `<div class="prose">${paras(c.summary)}</div>` : ""}
+      <p class="cv-actions">${c.pdf ? `<a href="${esc(safeUrl(c.pdf))}" target="_blank" rel="noopener">Télécharger le PDF</a>` : ""}<button data-print>Imprimer / PDF</button></p>
+    </header>
+    ${cvSec("expérience", c.experience || [], e => cvEntry(e, "role", "org"))}
+    ${cvSec("formation", c.education || [], e => cvEntry(e, "degree", "school"))}
+    ${cvSec("compétences", (c.skills || []).filter(g => g.label || (g.items || []).length), g => `<article class="cv-item"><div class="cv-when lab">${esc(g.label)}</div><p class="arr">${arr(g.items || [])}</p></article>`)}
+    ${langs.length ? `<section><h2 class="cv-h">langues</h2><pre class="obj"><code><span class="k">const</span> <span class="v">langues</span> <span class="pu">= {</span>\n${langs.map(l => `  <span class="p">${esc(l.name)}</span><span class="pu">:</span> ${val(l.level || "")}`).join('<span class="pu">,</span>\n')}\n<span class="pu">};</span></code></pre></section>` : ""}
+    ${(c.interests || []).length ? `<section><h2 class="cv-h">centres d'intérêt</h2><p class="arr">${arr(c.interests)}</p></section>` : ""}`;
+}
+
+/* ---------- événements ---------- */
+$("#views").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setView(b.dataset.view); });
+$("#cv").addEventListener("click", e => { if (e.target.closest("[data-print]")) window.print(); });
 $("#filters").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
-  activeTag = b.dataset.tag || null;
+  if ("all" in b.dataset) activeType = activeTag = null;
+  else if (b.dataset.type) activeType = activeType === b.dataset.type ? null : b.dataset.type;
+  else if (b.dataset.tag) activeTag = activeTag === b.dataset.tag ? null : b.dataset.tag;
   renderFilters(); renderList();
 });
 $("#list").addEventListener("click", e => {
