@@ -3,48 +3,67 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#171C26">
 <title>Portfolio</title>
 <meta name="description" content="Portfolio de projets">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0A0F1A; --surface:#111827; --ink:#E6EDF7; --muted:#8A97AB; --line:#1F2A3D; --accent:#4CC9F0;
+  --bg:#171C26; --surface:#1D2330; --raised:#242B3A; --line:#2C3445; --dot:#232A38;
+  --ink:#C9D1DD; --muted:#8F9AAD; --c:#6A768C; --accent:#6FC7CC;
+  --k:#AE9BE0; --s:#A3C98A; --n:#E3AE86; --p:#86B6E8;
   --display:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  color-scheme:light dark;
-}
-@media (prefers-color-scheme:light){
-  :root{--bg:#F5F7FB; --surface:#FFFFFF; --ink:#0E1726; --muted:#566377; --line:#D5DCE8; --accent:#0A6FA8}
+  color-scheme:dark;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background-color:var(--bg);background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:24px 24px;color:var(--ink);font-family:var(--body);font-size:1.0625rem;line-height:1.65;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration-color:var(--line);text-decoration-thickness:1px;text-underline-offset:.22em}
+::selection{background:var(--accent);color:var(--bg)}
+body{margin:0;background-color:var(--bg);background-image:radial-gradient(var(--dot) 1px,transparent 1px);background-size:24px 24px;color:var(--ink);font-family:var(--body);font-size:1.0625rem;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration-color:var(--c);text-decoration-thickness:1px;text-underline-offset:.22em}
 a:hover{color:var(--accent);text-decoration-color:var(--accent)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
 
-.layout{max-width:1180px;margin:0 auto;padding:clamp(1.5rem,4vw,3.5rem);display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:clamp(2rem,6vw,6rem)}
+/* coloration syntaxique réutilisable */
+.k{color:var(--k)} .s{color:var(--s)} .n{color:var(--n)} .p{color:var(--p)} .v{color:var(--ink)} .pu{color:var(--c)}
 
+.layout{max-width:1180px;margin:0 auto;padding:clamp(1.5rem,4vw,3.5rem);display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:clamp(2.5rem,6vw,6rem)}
+
+/* colonne de gauche */
 aside{position:sticky;top:clamp(1.5rem,4vw,3.5rem);align-self:start;min-height:calc(100vh - 7rem);display:flex;flex-direction:column;gap:1.5rem}
-h1{font-family:var(--display);font-weight:600;font-size:clamp(2.2rem,5vw,3.25rem);line-height:1.05;letter-spacing:-.04em;margin:0;overflow-wrap:anywhere}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,2.75rem);line-height:1.1;letter-spacing:-.04em;margin:0;overflow-wrap:anywhere}
+h1::before{content:"> ";color:var(--accent);font-weight:400}
 h1::after{content:"_";color:var(--accent)}
-.tagline{font-family:var(--display);font-size:1rem;color:var(--muted);margin:0}
+.tagline{font-family:var(--display);font-size:.95rem;color:var(--s);margin:0}
+.tagline::before,.tagline::after{content:'"';color:var(--c)}
+.tagline:empty{display:none}
+.bio{border-left:2px solid var(--line);padding-left:1rem}
+.bio:empty{display:none}
 .bio p{margin:0 0 1em}
+.bio p:last-child{margin-bottom:0}
 .contact{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.35rem;font-family:var(--display);font-size:.9rem}
+.pr{color:var(--c);user-select:none}
 aside footer{margin-top:auto;display:flex;flex-direction:column;align-items:flex-start;gap:1rem;font-family:var(--display);font-size:.8rem;color:var(--muted)}
-.admin-btn{display:inline-flex;align-items:center;font-family:var(--display);font-size:.9rem;padding:.45rem 1.1rem;border:1px solid var(--accent);border-radius:4px;color:var(--accent);text-decoration:none}
+.admin-btn{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--display);font-size:.9rem;padding:.45rem 1.1rem;border:1px solid var(--accent);border-radius:4px;color:var(--accent);text-decoration:none}
 .admin-btn:hover{background:var(--accent);color:var(--bg)}
 
+/* filtres */
 .filters{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 2rem}
-.filters button{font:inherit;font-family:var(--display);font-size:.9rem;padding:.3rem .85rem;border:1px solid var(--line);border-radius:4px;background:transparent;color:var(--muted);cursor:pointer}
-.filters button:hover{color:var(--ink);border-color:var(--muted)}
-.filters button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.filters button{font:inherit;font-family:var(--display);font-size:.82rem;padding:.3rem .8rem;border:1px solid var(--line);border-radius:4px;background:transparent;color:var(--muted);cursor:pointer}
+.filters button i{font-style:normal;color:var(--c)}
+.filters button:hover{color:var(--ink);border-color:var(--c)}
+.filters button[aria-pressed="true"]{color:var(--accent);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.filters button[aria-pressed="true"] i{color:var(--accent)}
 
-.row{position:relative;display:grid;grid-template-columns:200px minmax(0,1fr);gap:1.75rem;padding:1.75rem 0;border-top:1px solid var(--line)}
+/* liste de projets */
+#list{counter-reset:ln}
+.row{counter-increment:ln;position:relative;display:grid;grid-template-columns:200px minmax(0,1fr);gap:1.75rem;padding:1.75rem 0;border-top:1px solid var(--line)}
 .row:last-child{border-bottom:1px solid var(--line)}
-.thumb{aspect-ratio:4/3;background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden;display:grid;place-items:center;color:var(--muted);font-family:var(--display);font-size:2.25rem;font-weight:500}
+.row::before{content:counter(ln);position:absolute;left:-2.6rem;top:1.9rem;width:1.6rem;text-align:right;font-family:var(--display);font-size:.8rem;line-height:1.6;color:var(--c)}
+.thumb{aspect-ratio:4/3;background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden;display:grid;place-items:center;color:var(--c);font-family:var(--display);font-size:2.25rem;font-weight:500}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .line{display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
 .row h2{margin:0;font-family:var(--display);font-weight:500;font-size:1.15rem;letter-spacing:-.01em;line-height:1.3}
@@ -52,33 +71,51 @@ aside footer{margin-top:auto;display:flex;flex-direction:column;align-items:flex
 .row h2 button::after{content:"";position:absolute;inset:0}
 .row:hover h2 button{color:var(--accent)}
 .row h2 button:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:2px}
-.year{font-family:var(--display);font-variant-numeric:tabular-nums;color:var(--muted);font-size:.95rem}
+.side{display:flex;align-items:baseline;gap:.9rem;font-family:var(--display);font-size:.82rem;color:var(--muted);white-space:nowrap}
+.year::before{content:"// ";color:var(--c)}
 .summary{margin:.45rem 0 0}
-.tags{margin:.5rem 0 0;font-family:var(--display);font-size:.88rem;color:var(--muted)}
-.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.75rem 0 0;padding:0}
-.chips:empty{display:none}
-.chips span{font-family:var(--display);font-size:.78rem;color:var(--accent);border:1px solid var(--line);border-radius:4px;padding:.1rem .55rem}
-.empty{color:var(--muted);font-family:var(--display)}
+.arr{margin:.7rem 0 0;font-family:var(--display);font-size:.8rem;line-height:1.7}
+.arr:empty{display:none}
+.empty{color:var(--muted);font-family:var(--display);font-size:.92rem}
 
-dialog{border:0;padding:0;background:var(--bg);color:var(--ink);width:min(920px,calc(100% - 2rem));max-height:calc(100dvh - 2rem);border-radius:8px;overflow:auto}
-dialog::backdrop{background:rgba(10,14,15,.55)}
+/* statut du projet */
+.live{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--display);font-size:.8rem;color:var(--s)}
+.live i{display:block;width:.5rem;height:.5rem;border-radius:50%;background:var(--s);animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(163,201,138,.5)}70%,100%{box-shadow:0 0 0 .5rem rgba(163,201,138,0)}}
+.done{font-family:var(--display);font-size:.8rem;color:var(--muted)}
+.done::before{content:"✓ "}
+
+/* fiche projet */
+dialog{border:1px solid var(--line);padding:0;background:var(--surface);color:var(--ink);width:min(920px,calc(100% - 2rem));max-height:calc(100dvh - 2rem);border-radius:8px;overflow:auto}
+dialog::backdrop{background:rgba(10,13,19,.7)}
 dialog[open]{animation:pop .22s ease-out}
 @keyframes pop{from{opacity:0;transform:translateY(10px)}}
+.bar{position:sticky;top:0;z-index:1;display:flex;align-items:center;gap:1rem;padding:.6rem .9rem;background:var(--raised);border-bottom:1px solid var(--line);font-family:var(--display);font-size:.82rem;color:var(--muted)}
+.dots{display:flex;gap:.4rem}
+.dots i{display:block;width:.65rem;height:.65rem;border-radius:50%;opacity:.7}
+.dots i:nth-child(1){background:#FF5F57} .dots i:nth-child(2){background:#FEBC2E} .dots i:nth-child(3){background:#28C840}
+.bar .file{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.close{font:inherit;font-family:var(--display);font-size:.8rem;padding:.2rem .7rem;border:1px solid var(--line);border-radius:4px;background:transparent;color:var(--ink);cursor:pointer;flex:none}
+.close:hover{border-color:var(--accent);color:var(--accent)}
 .dlg-body{padding:clamp(1.25rem,3vw,2.25rem);display:grid;gap:1.5rem}
-.dlg-head{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+.dlg-head{display:grid;gap:.6rem}
 .dlg-head h2{margin:0;font-family:var(--display);font-weight:600;font-size:clamp(1.4rem,3vw,1.9rem);letter-spacing:-.03em;line-height:1.15}
-.dlg-head .tags{margin-top:.4rem}
-.close{font:inherit;font-family:var(--display);font-size:.9rem;padding:.3rem .85rem;border:1px solid var(--line);border-radius:4px;background:transparent;color:var(--ink);cursor:pointer;flex:none}
-.close:hover{border-color:var(--muted)}
-.gallery #big{width:100%;max-height:60vh;object-fit:contain;background:var(--surface);border-radius:4px;display:block}
+.obj{margin:0;padding:1rem 1.2rem;background:var(--bg);border:1px solid var(--line);border-radius:6px;overflow:auto;font-family:var(--display);font-size:.85rem;line-height:1.7}
+.obj code{font:inherit}
+.gallery #big{width:100%;max-height:60vh;object-fit:contain;background:var(--bg);border:1px solid var(--line);border-radius:4px;display:block}
 .thumbs{display:flex;gap:.5rem;margin-top:.6rem;flex-wrap:wrap}
-.thumbs button{padding:0;border:2px solid transparent;border-radius:4px;background:none;cursor:pointer;overflow:hidden;width:72px;height:54px;opacity:.65}
+.thumbs button{padding:0;border:2px solid transparent;border-radius:4px;background:none;cursor:pointer;overflow:hidden;width:72px;height:54px;opacity:.6}
 .thumbs button[aria-current="true"]{border-color:var(--accent);opacity:1}
 .thumbs img{width:100%;height:100%;object-fit:cover;display:block}
 .prose{max-width:66ch}
 .prose p{margin:0 0 1em;white-space:pre-line}
-.dlg-links{display:flex;gap:1.25rem;font-family:var(--display);margin:0}
+.dlg-links{display:flex;flex-wrap:wrap;gap:.75rem;margin:0;font-family:var(--display);font-size:.88rem}
+.dlg-links a{padding:.4rem 1rem;border:1px solid var(--line);border-radius:4px;text-decoration:none}
+.dlg-links a:hover{border-color:var(--accent)}
 
+@media (max-width:900px){
+  .row::before{display:none}
+}
 @media (max-width:820px){
   .layout{grid-template-columns:1fr}
   aside{position:static;min-height:0}
@@ -100,22 +137,28 @@ dialog[open]{animation:pop .22s ease-out}
     <p class="tagline" id="tagline"></p>
     <div class="bio" id="bio"></div>
     <ul class="contact" id="contact"></ul>
-    <footer><a class="admin-btn" href="admin.html">Admin</a><span id="copy"></span></footer>
+    <footer><a class="admin-btn" href="admin.html"><span class="pr">$</span> admin</a><span id="copy"></span></footer>
   </aside>
 
   <main>
     <nav class="filters" id="filters" aria-label="Filtrer par mot-clé" hidden></nav>
-    <div id="list"><p class="empty">Chargement…</p></div>
+    <div id="list"><p class="empty">// chargement…</p></div>
   </main>
 </div>
 
-<dialog id="dlg" aria-labelledby="dlg-title"><div class="dlg-body" id="dlg-body"></div></dialog>
+<dialog id="dlg" aria-labelledby="dlg-title"><div id="dlg-inner"></div></dialog>
 
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl = u => /^(https?:|mailto:)/i.test(u || "") ? u : "#";
 const paras = t => String(t || "").split(/\n{2,}/).filter(x => x.trim()).map(x => `<p>${esc(x.trim())}</p>`).join("");
+
+/* helpers « code » */
+const val = x => /^\d+$/.test(String(x)) ? `<span class="n">${esc(x)}</span>` : `<span class="s">"${esc(x)}"</span>`;
+const arr = a => `<span class="pu">[</span>${a.map(t => `<span class="s">"${esc(t)}"</span>`).join('<span class="pu">, </span>')}<span class="pu">]</span>`;
+const live = '<span class="live"><i></i>en cours</span>';
+const state = p => p.ongoing ? live : '<span class="done">terminé</span>';
 
 let data = { profile: {}, projects: [] };
 let activeTag = null;
@@ -126,7 +169,7 @@ async function load() {
     if (!r.ok) throw new Error(r.status);
     data = await r.json();
   } catch (e) {
-    $("#list").innerHTML = '<p class="empty">Impossible de charger projects.json. Ouvrez le site via GitHub Pages ou un serveur local (pas en double-cliquant sur le fichier).</p>';
+    $("#list").innerHTML = '<p class="empty">// Impossible de charger projects.json. Ouvrez le site via GitHub Pages ou un serveur local (pas en double-cliquant sur le fichier).</p>';
     return;
   }
   data.projects = (data.projects || []).slice().sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0));
@@ -138,10 +181,10 @@ async function load() {
 
 function renderProfile() {
   const p = data.profile || {};
-  if (p.name) { $("#name").textContent = p.name; document.title = p.name; $("#copy").textContent = "© " + new Date().getFullYear() + " " + p.name + "."; }
+  if (p.name) { $("#name").textContent = p.name; document.title = p.name; $("#copy").textContent = "// © " + new Date().getFullYear() + " " + p.name; }
   $("#tagline").textContent = p.tagline || "";
   $("#bio").innerHTML = paras(p.bio);
-  $("#contact").innerHTML = (p.links || []).map(l => `<li><a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener">${esc(l.label)}</a></li>`).join("");
+  $("#contact").innerHTML = (p.links || []).map(l => `<li><span class="pr">$</span> <a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener">${esc(l.label)}</a></li>`).join("");
 }
 
 function renderFilters() {
@@ -149,22 +192,25 @@ function renderFilters() {
   const nav = $("#filters");
   nav.hidden = tags.length < 2;
   nav.innerHTML = ["Tout", ...tags].map((t, i) =>
-    `<button data-tag="${i ? esc(t) : ""}" aria-pressed="${(i ? t : null) === activeTag}">${esc(t)}</button>`).join("");
+    `<button data-tag="${i ? esc(t) : ""}" aria-pressed="${(i ? t : null) === activeTag}">${i ? "<i>#</i>" : ""}${esc(t)}</button>`).join("");
 }
 
 function renderList() {
   const items = data.projects.filter(p => !activeTag || (p.tags || []).includes(activeTag));
   if (!items.length) {
-    $("#list").innerHTML = '<p class="empty">Aucun projet pour l\'instant. Ajoutez-en depuis la page Administration.</p>';
+    $("#list").innerHTML = '<p class="empty">// Aucun projet pour l\'instant. Ajoutez-en depuis la page admin.</p>';
     return;
   }
   $("#list").innerHTML = items.map(p => `
     <article class="row">
       <div class="thumb" aria-hidden="true">${p.images && p.images[0] ? `<img src="${esc(p.images[0])}" alt="" loading="lazy">` : esc((p.title || "?").trim()[0] || "?")}</div>
       <div class="info">
-        <div class="line"><h2><button data-id="${esc(p.id)}">${esc(p.title)}</button></h2><span class="year">${esc(p.year)}</span></div>
+        <div class="line">
+          <h2><button data-id="${esc(p.id)}">${esc(p.title)}</button></h2>
+          <span class="side">${p.ongoing ? live : ""}${p.year ? `<span class="year">${esc(p.year)}</span>` : ""}</span>
+        </div>
         <p class="summary">${esc(p.summary)}</p>
-        <p class="chips">${(p.tags || []).map(t => `<span>${esc(t)}</span>`).join("")}</p>
+        <p class="arr">${(p.tags || []).length ? arr(p.tags) : ""}</p>
       </div>
     </article>`).join("");
 }
@@ -175,15 +221,26 @@ function openProject(id) {
   const imgs = p.images || [];
   const links = [p.link && ["Voir le projet", p.link], p.repo && ["Code source", p.repo]].filter(Boolean)
     .map(([t, u]) => `<a href="${esc(safeUrl(u))}" target="_blank" rel="noopener">${t}</a>`).join("");
-  $("#dlg-body").innerHTML = `
-    <div class="dlg-head">
-      <div><h2 id="dlg-title">${esc(p.title)}</h2><p class="tags">${esc([p.year, ...(p.tags || [])].filter(Boolean).join(", "))}</p></div>
+  const props = [];
+  if (p.year) props.push(["année", val(p.year)]);
+  if ((p.tags || []).length) props.push(["tags", arr(p.tags)]);
+  const obj = props.length
+    ? `<pre class="obj"><code><span class="k">const</span> <span class="v">projet</span> <span class="pu">= {</span>\n${props.map(([k, v]) => `  <span class="p">${k}</span><span class="pu">:</span> ${v}`).join('<span class="pu">,</span>\n')}\n<span class="pu">};</span></code></pre>`
+    : "";
+  $("#dlg-inner").innerHTML = `
+    <div class="bar">
+      <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="file">${esc(p.id)}.md</span>
       <button class="close" data-close>Fermer</button>
     </div>
-    ${imgs.length ? `<div class="gallery"><img id="big" src="${esc(imgs[0])}" alt="${esc(p.title)}">${
-      imgs.length > 1 ? `<div class="thumbs">${imgs.map((s, i) => `<button data-img="${esc(s)}" aria-label="Image ${i + 1}" aria-current="${i === 0}"><img src="${esc(s)}" alt=""></button>`).join("")}</div>` : ""}</div>` : ""}
-    <div class="prose">${paras(p.description || p.summary)}</div>
-    ${links ? `<p class="dlg-links">${links}</p>` : ""}`;
+    <div class="dlg-body">
+      <div class="dlg-head"><h2 id="dlg-title">${esc(p.title)}</h2>${state(p)}</div>
+      ${obj}
+      ${imgs.length ? `<div class="gallery"><img id="big" src="${esc(imgs[0])}" alt="${esc(p.title)}">${
+        imgs.length > 1 ? `<div class="thumbs">${imgs.map((s, i) => `<button data-img="${esc(s)}" aria-label="Image ${i + 1}" aria-current="${i === 0}"><img src="${esc(s)}" alt=""></button>`).join("")}</div>` : ""}</div>` : ""}
+      <div class="prose">${paras(p.description || p.summary)}</div>
+      ${links ? `<p class="dlg-links">${links}</p>` : ""}
+    </div>`;
   $("#dlg").showModal();
   history.replaceState(null, "", "#" + encodeURIComponent(id));
 }
