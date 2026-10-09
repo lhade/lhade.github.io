@@ -50,10 +50,15 @@
     }
   ],
   "cv": {
-    "headline": "",
-    "summary": "",
+    "headline": "Dev jv test",
+    "summary": "test",
     "pdf": "",
-    "experience": [],
+    "experience": [
+      {
+        "role": "test",
+        "org": "Test"
+      }
+    ],
     "education": [],
     "skills": [],
     "languages": [],
