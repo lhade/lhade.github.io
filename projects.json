@@ -10,5 +10,23 @@
       }
     ]
   },
-  "projects": []
+  "projects": [
+    {
+      "id": "sark-douls",
+      "title": "Sark Douls",
+      "year": "2026",
+      "summary": "Un action RPG dynamique jouable en multijoueur",
+      "description": "",
+      "tags": [
+        "Jeu"
+      ],
+      "link": "",
+      "repo": "",
+      "images": [
+        "images/sark-douls-mv0ufxg8vow.jpg",
+        "images/sark-douls-mv0ufxfmxwz.jpg",
+        "images/sark-douls-mv0ug9g80zk.jpg"
+      ]
+    }
+  ]
 }
