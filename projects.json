@@ -12,6 +12,18 @@
   },
   "projects": [
     {
+      "id": "test",
+      "title": "Test",
+      "year": "2026",
+      "summary": "",
+      "description": "",
+      "tags": [],
+      "ongoing": true,
+      "link": "",
+      "repo": "",
+      "images": []
+    },
+    {
       "id": "sark-douls",
       "title": "Sark Douls",
       "year": "2026",
