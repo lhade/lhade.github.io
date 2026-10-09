@@ -45,7 +45,18 @@
       "type": "game",
       "details": {
         "genre": "Action RPG",
-        "mode": "Multijoueur"
+        "mode": "Multijoueur",
+        "engine": "Unity",
+        "platforms": "PC",
+        "role": "Animations, UI, développement, etc",
+        "team": "Binômes",
+        "pitch": "Action RPG seul ou en duo à l'humour décalé consistant à parcourir un donjon le plus efficacement possible afin d'éviter les malus contre votre cible : le boss au bout de l'étage\nL'objectif sera de compléter tous les étages et de vaincre tous les ennemis pour faire progresser l'histoire",
+        "mechanics": [
+          "Différentes compétences",
+          "Loot",
+          "Multijoueur"
+        ],
+        "challenges": "Premier projet donc beaucoup de découverte, mais nous avons obtenus un résultat assez satisfaisant pour le délais accordé"
       }
     }
   ],
