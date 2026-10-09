@@ -35,14 +35,14 @@ details .hint{margin:.75rem 0}
 .side{position:sticky;top:1rem}
 .side h2{font-size:.95rem;font-weight:500;color:var(--muted);margin:1.25rem 0 .4rem}
 .side ul{list-style:none;margin:0 0 .75rem;padding:0}
-.side li button, #goprofile{width:100%;text-align:left;font:inherit;padding:.4rem .6rem;border:0;border-radius:4px;background:none;color:var(--ink);cursor:pointer}
-.side li button:hover, #goprofile:hover{background:var(--surface)}
+.side li button, .side>button:not(.add){width:100%;text-align:left;font:inherit;padding:.4rem .6rem;border:0;border-radius:4px;background:none;color:var(--ink);cursor:pointer}
+.side li button:hover, .side>button:not(.add):hover{background:var(--surface)}
 .side [aria-current="true"]{background:var(--surface);font-weight:600;box-shadow:inset 3px 0 0 var(--accent)}
 
 #editor{display:grid;gap:1rem}
 #editor h2{margin:0;font-family:var(--display);font-size:1.2rem;font-weight:600;letter-spacing:-.02em}
 label{display:grid;gap:.3rem;font-size:.92rem;color:var(--muted)}
-input,textarea{font:inherit;font-family:var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:.55rem .7rem;width:100%}
+input,textarea,select{font:inherit;font-family:var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:.55rem .7rem;width:100%}
 input[type=file]{font-family:var(--display);font-size:.9rem;padding:.45rem}
 textarea{line-height:1.55;resize:vertical}
 input[type=checkbox]{width:auto;accent-color:var(--accent)}
@@ -63,6 +63,11 @@ figure button:hover,.btn:hover{border-color:var(--muted)}
 .primary{font-size:.95rem;padding:.5rem 1.2rem;border:1px solid var(--ink);border-radius:4px;background:var(--ink);color:var(--bg);font-weight:500}
 .primary:disabled{opacity:.5;cursor:wait}
 .danger{justify-self:start;font-size:.9rem;padding:.4rem .9rem;border:1px solid var(--danger);border-radius:4px;background:transparent;color:var(--danger)}
+.card{border:1px solid var(--line);border-radius:6px;padding:1rem;display:grid;gap:.75rem;background:var(--surface)}
+.card input,.card textarea{background:var(--bg)}
+.card .mini{display:flex;gap:.4rem;justify-content:flex-end}
+.card .mini button{font-size:.82rem;padding:.2rem .6rem;border:1px solid var(--line);border-radius:4px;background:transparent;color:var(--ink)}
+.card .mini button:hover{border-color:var(--muted)}
 .hint{color:var(--muted);font-size:.9rem;margin:0}
 .add{width:100%;margin-top:.25rem;padding:.45rem .8rem;border:1px dashed var(--muted);border-radius:4px;background:none;color:var(--ink)}
 .add:hover{background:var(--surface)}
@@ -100,9 +105,11 @@ figure button:hover,.btn:hover{border-color:var(--muted)}
   <div class="cols">
     <nav class="side" id="nav" aria-label="Sections">
       <button id="goprofile" data-view="profile">Profil</button>
+      <button id="gocv" data-view="cv">CV</button>
       <h2>Projets</h2>
       <ul id="plist"></ul>
-      <button class="add" id="new">Ajouter un projet</button>
+      <button class="add" data-new="game">Ajouter un jeu</button>
+      <button class="add" data-new="app">Ajouter une app</button>
     </nav>
     <section id="editor" aria-live="polite"></section>
   </div>
@@ -114,6 +121,7 @@ figure button:hover,.btn:hover{border-color:var(--muted)}
   </div>
 </div>
 
+<script src="schema.js"></script>
 <script>
 (() => {
 const $ = s => document.querySelector(s);
@@ -127,6 +135,8 @@ try { cfg = { ...cfg, ...JSON.parse(localStorage.getItem("portfolio-admin") || "
 
 let data = { profile: { name: "", tagline: "", bio: "", links: [] }, projects: [] };
 let view = "profile", dirty = false;
+const TYPES = (window.SCHEMA || {}).types || {};
+const RESERVED = new Set(["profile", "cv"]);
 const pending = {};          // images ajoutées localement : chemin -> { b64, url, done }
 const toDelete = new Set();  // images à supprimer du dépôt à la publication
 
@@ -173,19 +183,22 @@ async function load() {
   }
   data.profile = data.profile || {};
   data.projects = data.projects || [];
-  data.projects.forEach(p => { p.id = p.id || slug(p.title || ""); });
+  data.cv = { headline: "", summary: "", pdf: "", experience: [], education: [], skills: [], languages: [], interests: [], ...(data.cv || {}) };
+  data.projects.forEach(p => { p.id = p.id || slug(p.title || ""); p.details = p.details || {}; });
   renderSide(); renderEditor();
 }
 
 /* ---------- Rendu ---------- */
 function renderSide() {
   $("#goprofile").setAttribute("aria-current", view === "profile");
+  $("#gocv").setAttribute("aria-current", view === "cv");
   $("#plist").innerHTML = data.projects.map(p =>
     `<li><button data-view="${esc(p.id)}" aria-current="${view === p.id}">${esc(p.title || p.id)}</button></li>`).join("");
 }
 
 function renderEditor() {
   const ed = $("#editor");
+  if (view === "cv") return renderCV();
   if (view === "profile") {
     const p = data.profile;
     ed.innerHTML = `
@@ -205,9 +218,10 @@ function renderEditor() {
       <label>Titre<input data-f="title" value="${esc(p.title)}"></label>
       <label>Année<input data-f="year" value="${esc(p.year)}" inputmode="numeric"></label>
     </div>
-    <label>Résumé (une phrase)<input data-f="summary" value="${esc(p.summary)}"></label>
+    <label>Type de projet<select data-f="type">${Object.entries(TYPES).map(([k, t]) => `<option value="${k}" ${(p.type || "other") === k ? "selected" : ""}>${esc(t.label)}</option>`).join("")}</select></label>
+    <label>Résumé (une phrase, affiché dans la liste)<input data-f="summary" value="${esc(p.summary)}"></label>
     <label class="check"><input type="checkbox" data-f="ongoing" ${p.ongoing ? "checked" : ""}>Projet en cours</label>
-    <label>Description<textarea data-f="description" rows="10">${esc(p.description)}</textarea></label>
+    ${typeFields(p)}
     <label>Mots-clés (séparés par des virgules)<input data-f="tags" value="${esc((p.tags || []).join(", "))}"></label>
     <div class="grid2">
       <label>Lien du projet<input data-f="link" value="${esc(p.link)}" placeholder="https://…"></label>
@@ -221,6 +235,48 @@ function renderEditor() {
     </fieldset>
     <button class="danger" data-act="del">Supprimer ce projet</button>`;
   renderImages();
+}
+
+function typeFields(p) {
+  const t = TYPES[p.type] || TYPES.other, det = p.details || {};
+  const facts = t.facts.map(f => `<label>${esc(f.label)}<input data-d="${f.key}" value="${esc(det[f.key])}" placeholder="${esc(f.ph || "")}"></label>`).join("");
+  const secs = t.sections.map(s => {
+    const v = s.root ? p[s.key] : det[s.key], list = s.kind === "list";
+    return `<label>${esc(s.label)}${list ? " (une ligne = un point)" : ""}<textarea ${s.root ? `data-f="${s.key}"` : `data-d="${s.key}"`} ${list ? 'data-kind="list"' : ""} rows="${s.rows || (list ? 4 : 5)}" placeholder="${esc(s.ph || "")}">${esc(list ? [].concat(v || []).join("\n") : v)}</textarea></label>`;
+  }).join("");
+  return (facts ? `<fieldset><legend>${esc(t.label)} : infos</legend><div class="grid2">${facts}</div></fieldset>` : "") + secs;
+}
+
+/* ---------- CV ---------- */
+const DATES = [["start", "Début", "2024"], ["end", "Fin", "2025"], ["current", "En cours", "", "check"]];
+const CVL = {
+  experience: { t: "Expériences", n: "Ajouter une expérience", f: [["role", "Poste"], ["org", "Organisation"], ["place", "Lieu"], ...DATES, ["description", "Détails (une ligne = un point)", "", "list"]] },
+  education: { t: "Formation", n: "Ajouter une formation", f: [["degree", "Diplôme / formation"], ["school", "Établissement"], ["place", "Lieu"], ...DATES, ["description", "Détails (une ligne = un point)", "", "list"]] },
+  skills: { t: "Compétences", n: "Ajouter une catégorie", f: [["label", "Catégorie", "Langages, Outils…"], ["items", "Compétences (séparées par des virgules)", "", "csv"]] },
+  languages: { t: "Langues", n: "Ajouter une langue", f: [["name", "Langue"], ["level", "Niveau", "natif, B2…"]] }
+};
+function cvField(attr, k, l, ph, kind, v) {
+  if (kind === "check") return `<label class="check"><input type="checkbox" ${attr} data-k="${k}" ${v ? "checked" : ""}>${l}</label>`;
+  if (kind === "list") return `<label>${l}<textarea ${attr} data-k="${k}" data-kind="list" rows="3">${esc([].concat(v || []).join("\n"))}</textarea></label>`;
+  return `<label>${l}<input ${attr} data-k="${k}" data-kind="${kind || ""}" value="${esc(kind === "csv" ? [].concat(v || []).join(", ") : v)}" placeholder="${esc(ph || "")}"></label>`;
+}
+function renderCV() {
+  const c = data.cv;
+  $("#editor").innerHTML = `
+    <h2>CV</h2>
+    <p class="hint">L'onglet « cv » apparaît sur le site dès qu'au moins un champ est rempli.</p>
+    <label>Intitulé<input data-c="headline" value="${esc(c.headline)}" placeholder="Développeur de jeux, étudiant en…"></label>
+    <label>Résumé<textarea data-c="summary" rows="4">${esc(c.summary)}</textarea></label>
+    <label>Lien vers un CV en PDF (optionnel)<input data-c="pdf" value="${esc(c.pdf)}" placeholder="https://…"></label>
+    ${Object.entries(CVL).map(([l, d]) => `
+      <fieldset><legend>${d.t}</legend>
+        ${(c[l] || []).map((it, i) => `<div class="card">
+          <div class="grid2">${d.f.map(([k, lab, ph, kind]) => cvField(`data-l="${l}" data-i="${i}"`, k, lab, ph, kind, it[k])).join("")}</div>
+          <div class="mini"><button data-cv="up:${l}" data-i="${i}">Monter</button><button data-cv="down:${l}" data-i="${i}">Descendre</button><button data-cv="del:${l}" data-i="${i}">Supprimer</button></div>
+        </div>`).join("")}
+        <button class="add" data-cv="add:${l}">${d.n}</button>
+      </fieldset>`).join("")}
+    <label>Centres d'intérêt (séparés par des virgules)<input data-c="interests" data-kind="csv" value="${esc((c.interests || []).join(", "))}"></label>`;
 }
 
 function renderImages() {
@@ -262,13 +318,33 @@ $("#nav").addEventListener("click", e => {
   view = b.dataset.view; renderSide(); renderEditor();
 });
 
-$("#new").addEventListener("click", () => {
+document.querySelectorAll("[data-new]").forEach(b => b.addEventListener("click", () => {
   const t = prompt("Titre du projet ?");
   if (!t || !t.trim()) return;
   let id = slug(t), n = 2;
-  while (data.projects.some(p => p.id === id)) id = slug(t) + "-" + n++;
-  data.projects.unshift({ id, title: t.trim(), year: String(new Date().getFullYear()), summary: "", description: "", tags: [], ongoing: false, link: "", repo: "", images: [] });
+  while (data.projects.some(p => p.id === id) || RESERVED.has(id)) id = slug(t) + "-" + n++;
+  data.projects.unshift({ id, title: t.trim(), type: b.dataset.new, year: String(new Date().getFullYear()), summary: "", description: "", details: {}, tags: [], ongoing: false, link: "", repo: "", images: [] });
   view = id; markDirty(); renderSide(); renderEditor();
+}));
+
+/* champs du CV et champs spécifiques au type */
+$("#editor").addEventListener("input", e => {
+  const t = e.target, d = t.dataset, v = t.type === "checkbox" ? t.checked : t.value;
+  const conv = x => d.kind === "list" ? x.split("\n").map(s => s.trim()).filter(Boolean) : d.kind === "csv" ? x.split(",").map(s => s.trim()).filter(Boolean) : x;
+  if (d.d) { const p = cur(); if (!p) return; (p.details = p.details || {})[d.d] = d.kind === "list" ? conv(v) : v; }
+  else if (d.c) data.cv[d.c] = conv(v);
+  else if (d.l) data.cv[d.l][+d.i][d.k] = conv(v);
+  else return;
+  markDirty();
+});
+$("#editor").addEventListener("change", e => { if (e.target.dataset.f === "type") renderEditor(); });
+$("#editor").addEventListener("click", e => {
+  const b = e.target.closest("[data-cv]"); if (!b) return;
+  const [act, l] = b.dataset.cv.split(":"), i = +b.dataset.i, a = data.cv[l];
+  if (act === "add") a.push({});
+  else if (act === "del") a.splice(i, 1);
+  else { const j = act === "up" ? i - 1 : i + 1; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; }
+  markDirty(); renderCV();
 });
 
 $("#editor").addEventListener("input", e => {
