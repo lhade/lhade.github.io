@@ -59,8 +59,16 @@
         "org": "Test"
       }
     ],
-    "education": [],
-    "skills": [],
+    "education": [
+      {
+        "degree": "test"
+      }
+    ],
+    "skills": [
+      {
+        "label": "test"
+      }
+    ],
     "languages": [],
     "interests": []
   }
