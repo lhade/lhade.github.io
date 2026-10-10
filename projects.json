@@ -100,7 +100,7 @@
     "education": [
       {
         "current": true,
-        "degree": "achelor Programmation Informatique spécialité Jeux Vidéos",
+        "degree": "Bachelor Programmation Informatique spécialité Jeux Vidéos",
         "school": "Gaming Campus",
         "place": "Lyon",
         "start": "2026",
@@ -168,7 +168,8 @@
     "interests": [
       "Jeux vidéos",
       "Lecture",
-      "technologie"
+      "Technologie",
+      "Cinéma"
     ]
   }
 }
