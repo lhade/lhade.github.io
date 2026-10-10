@@ -62,7 +62,7 @@
   ],
   "cv": {
     "headline": "Dev jv test",
-    "summary": "test",
+    "summary": "Passionné par la création numérique, j’ai construit mon parcours autour du\ndéveloppement et de la cybersécurité. Aujourd’hui, je me reconvertis dans le\ndéveloppement de jeux vidéo, un domaine qui me passionne depuis mes jeunes\nannées. Je me forme aux moteurs de jeu et aux fondamentaux du game\ndevelopment afin d’évoluer vers un rôle de game developer",
     "pdf": "",
     "experience": [
       {
@@ -77,6 +77,16 @@
           "Scripts",
           "Site internet",
           "Procédures stockées (SQL?"
+        ]
+      },
+      {
+        "role": "Technicien d'assistance informatique",
+        "org": "Espace Passerelle",
+        "place": "Tours",
+        "start": "Novembre 2024",
+        "description": [
+          "Bénévolat",
+          "Réparation de postes HS afin de les redistribuer en milieu défavorisé"
         ]
       }
     ],
