@@ -88,20 +88,38 @@
           "Bénévolat",
           "Réparation de postes HS afin de les redistribuer en milieu défavorisé"
         ]
+      },
+      {
+        "role": "Chargé d'étude",
+        "org": "Autorité de Sûreté Nucléaire",
+        "place": "Montrouge",
+        "start": "Janvier 2019",
+        "end": "Février 2019"
       }
     ],
     "education": [
       {
-        "degree": "test"
+        "degree": "Mastère Expert en développement sécurisé",
+        "school": "LiveCampus",
+        "place": "Lyon",
+        "start": "2023",
+        "end": "2024"
+      },
+      {
+        "degree": "Experts en Applications Numériques",
+        "school": "LiveCampus",
+        "place": "Lyon",
+        "start": "2021",
+        "end": "2023"
       }
     ],
     "skills": [
       {
-        "label": "test",
+        "label": "Informatique",
         "items": [
-          "Test1",
-          "test2",
-          "test3"
+          "Hardware",
+          "Développement web",
+          "SQL"
         ]
       },
       {
