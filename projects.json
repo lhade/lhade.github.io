@@ -76,7 +76,7 @@
           "Création webapp",
           "Scripts",
           "Site internet",
-          "Procédures stockées (SQL?"
+          "Procédures stockées (SQL)"
         ]
       },
       {
@@ -98,6 +98,14 @@
       }
     ],
     "education": [
+      {
+        "current": true,
+        "degree": "achelor Programmation Informatique spécialité Jeux Vidéos",
+        "school": "Gaming Campus",
+        "place": "Lyon",
+        "start": "2026",
+        "end": "2027"
+      },
       {
         "degree": "Mastère Expert en développement sécurisé",
         "school": "LiveCampus",
