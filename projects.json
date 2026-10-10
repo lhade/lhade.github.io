@@ -119,6 +119,14 @@
         "place": "Lyon",
         "start": "2021",
         "end": "2023"
+      },
+      {
+        "degree": "BTS SIO",
+        "school": "Lycée Geoffrey Saint-Hilaire",
+        "place": "Etampes",
+        "start": "2017",
+        "end": "2019",
+        "current": true
       }
     ],
     "skills": [
