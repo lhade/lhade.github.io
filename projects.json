@@ -12,6 +12,26 @@
   },
   "projects": [
     {
+      "id": "party-toys",
+      "title": "Party Toys",
+      "type": "game",
+      "year": "2026",
+      "summary": "Party game multijoueur ",
+      "description": "",
+      "details": {
+        "pitch": "Party Toys est un party game en vue troisième personne, de quatre à dix joueurs\ndans l'univers nostalgique du tapis de ville.\n",
+        "genre": "Party game ",
+        "platforms": "PC",
+        "mode": "Multi joueurs ",
+        "team": "15 personnes "
+      },
+      "tags": [],
+      "ongoing": true,
+      "link": "",
+      "repo": "",
+      "images": []
+    },
+    {
       "id": "test",
       "title": "Test",
       "year": "2026",
