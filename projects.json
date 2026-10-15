@@ -23,9 +23,17 @@
         "genre": "Party game ",
         "platforms": "PC",
         "mode": "Multi joueurs ",
-        "team": "15 personnes "
+        "team": "15 personnes ",
+        "role": "Programmation, Game design ",
+        "mechanics": [
+          "• Multiples modes de jeu",
+          "• Événements aléatoires"
+        ]
       },
-      "tags": [],
+      "tags": [
+        "Jeux vidéo",
+        "Multiplayer"
+      ],
       "ongoing": true,
       "link": "",
       "repo": "",
