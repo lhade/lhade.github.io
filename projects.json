@@ -20,14 +20,14 @@
       "description": "",
       "details": {
         "pitch": "Party Toys est un party game en vue troisième personne, de quatre à dix joueurs\ndans l'univers nostalgique du tapis de ville.\n",
-        "genre": "Party game ",
+        "genre": "Party game",
         "platforms": "PC",
-        "mode": "Multi joueurs ",
+        "mode": "Multi joueurs",
         "team": "15 personnes ",
-        "role": "Programmation, Game design ",
+        "role": "Programmation, Game design",
         "mechanics": [
-          "• Multiples modes de jeu",
-          "• Événements aléatoires"
+          "Multiples modes de jeu",
+          "Événements aléatoires"
         ]
       },
       "tags": [
