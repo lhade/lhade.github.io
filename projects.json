@@ -16,6 +16,33 @@
   },
   "projects": [
     {
+      "id": "modding-wildfrost",
+      "title": "Modding Wildfrost",
+      "type": "game",
+      "year": "2024",
+      "summary": "",
+      "description": "",
+      "details": {
+        "genre": "Roguelike",
+        "mode": "Solo",
+        "team": "Seul",
+        "role": "Modding",
+        "platforms": "PC",
+        "pitch": "Intégration de personnages de Valorant dans Wildfrost",
+        "challenges": "Un de mes premiers pas dans le monde du modding et du C#, ce fut donc assez difficile et le projet n'est pas encore terminé"
+      },
+      "tags": [
+        "Mod",
+        "c#"
+      ],
+      "ongoing": false,
+      "link": "",
+      "repo": "",
+      "images": [
+        "images/modding-wildfrost-mveggcw1l59.jpg"
+      ]
+    },
+    {
       "id": "party-toys",
       "title": "Party Toys",
       "type": "game",
