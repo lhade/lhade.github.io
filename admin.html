@@ -6,28 +6,19 @@
 <meta name="robots" content="noindex">
 <meta name="color-scheme" content="dark">
 <title>Administration</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
 <style>
-:root{
-  --bg:#171C26; --surface:#1D2330; --line:#2C3445; --dot:#232A38; --ink:#C9D1DD; --muted:#8F9AAD; --accent:#6FC7CC; --danger:#E59A9A; --ok:#A3C98A;
-  --display:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  color-scheme:dark;
-}
+:root{--display:var(--font-display);--body:var(--font-body)}
 *{box-sizing:border-box}
-body{margin:0;background-color:var(--bg);background-image:radial-gradient(var(--dot) 1px,transparent 1px);background-size:24px 24px;color:var(--ink);font-family:var(--body);font-size:1rem;line-height:1.55;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1rem;line-height:1.55;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-underline-offset:.2em}
 a:hover{color:var(--accent)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
 .wrap{max-width:1100px;margin:0 auto;padding:clamp(1rem,3vw,2.5rem)}
 .top{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:1.5rem}
 .top h1{margin:0;font-family:var(--display);font-weight:600;font-size:1.4rem;letter-spacing:-.03em}
-.top h1::before{content:"$ ";color:var(--accent);font-weight:400}
-.top h1::after{content:"_";color:var(--accent)}
 
-details{border:1px solid var(--line);border-radius:6px;padding:.75rem 1rem;margin-bottom:1.5rem;background:var(--surface)}
+details{border:1px solid var(--line);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-bottom:1.5rem;background:var(--surface)}
 summary{cursor:pointer;font-weight:500}
 details .hint{margin:.75rem 0}
 
@@ -35,46 +26,45 @@ details .hint{margin:.75rem 0}
 .side{position:sticky;top:1rem}
 .side h2{font-size:.95rem;font-weight:500;color:var(--muted);margin:1.25rem 0 .4rem}
 .side ul{list-style:none;margin:0 0 .75rem;padding:0}
-.side li button, .side>button:not(.add){width:100%;text-align:left;font:inherit;padding:.4rem .6rem;border:0;border-radius:4px;background:none;color:var(--ink);cursor:pointer}
+.side li button, .side>button:not(.add){width:100%;text-align:left;font:inherit;padding:.4rem .6rem;border:0;border-radius:var(--radius-sm);background:none;color:var(--ink);cursor:pointer}
 .side li button:hover, .side>button:not(.add):hover{background:var(--surface)}
 .side [aria-current="true"]{background:var(--surface);font-weight:600;box-shadow:inset 3px 0 0 var(--accent)}
 
 #editor{display:grid;gap:1rem}
 #editor h2{margin:0;font-family:var(--display);font-size:1.2rem;font-weight:600;letter-spacing:-.02em}
 label{display:grid;gap:.3rem;font-size:.92rem;color:var(--muted)}
-input,textarea,select{font:inherit;font-family:var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:.55rem .7rem;width:100%}
-input[type=file]{font-family:var(--display);font-size:.9rem;padding:.45rem}
+input,textarea,select{font:inherit;font-family:var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:.55rem .7rem;width:100%}
+input[type=file]{font-family:var(--font-mono);font-size:.9rem;padding:.45rem}
 textarea{line-height:1.55;resize:vertical}
 input[type=checkbox]{width:auto;accent-color:var(--accent)}
 label.check{display:flex;align-items:center;gap:.6rem;color:var(--ink);font-size:1rem}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .grid2 label:first-child:has(input[data-f="year"]){grid-column:auto}
-fieldset{border:1px solid var(--line);border-radius:6px;padding:1rem;margin:0;display:grid;gap:.75rem}
+fieldset{border:1px solid var(--line);border-radius:var(--radius-sm);padding:1rem;margin:0;display:grid;gap:.75rem}
 legend{padding:0 .4rem;color:var(--muted);font-size:.92rem}
 .imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.75rem}
 figure{margin:0;display:grid;gap:.3rem;font-size:.82rem;color:var(--muted)}
-figure img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:4px;background:var(--surface)}
+figure img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--radius-sm);background:var(--surface)}
 figure div{display:flex;gap:.3rem;flex-wrap:wrap}
 figcaption{min-height:1.2em}
 
 button{font:inherit;cursor:pointer}
-figure button,.btn{font-size:.85rem;padding:.25rem .6rem;border:1px solid var(--line);border-radius:4px;background:transparent;color:var(--ink)}
+figure button,.btn{font-size:.85rem;padding:.25rem .6rem;border:1px solid var(--line);border-radius:var(--radius-sm);background:transparent;color:var(--ink)}
 figure button:hover,.btn:hover{border-color:var(--muted)}
-.primary{font-size:.95rem;padding:.5rem 1.2rem;border:1px solid var(--ink);border-radius:4px;background:var(--ink);color:var(--bg);font-weight:500}
+.primary{font-size:.95rem;padding:.5rem 1.2rem;border:1px solid var(--ink);border-radius:var(--radius-sm);background:var(--ink);color:var(--bg);font-weight:500}
 .primary:disabled{opacity:.5;cursor:wait}
-.danger{justify-self:start;font-size:.9rem;padding:.4rem .9rem;border:1px solid var(--danger);border-radius:4px;background:transparent;color:var(--danger)}
-.card{border:1px solid var(--line);border-radius:6px;padding:1rem;display:grid;gap:.75rem;background:var(--surface)}
+.danger{justify-self:start;font-size:.9rem;padding:.4rem .9rem;border:1px solid var(--danger);border-radius:var(--radius-sm);background:transparent;color:var(--danger)}
+.card{border:1px solid var(--line);border-radius:var(--radius-sm);padding:1rem;display:grid;gap:.75rem;background:var(--surface)}
 .card input,.card textarea{background:var(--bg)}
 .card .mini{display:flex;gap:.4rem;justify-content:flex-end}
-.card .mini button{font-size:.82rem;padding:.2rem .6rem;border:1px solid var(--line);border-radius:4px;background:transparent;color:var(--ink)}
+.card .mini button{font-size:.82rem;padding:.2rem .6rem;border:1px solid var(--line);border-radius:var(--radius-sm);background:transparent;color:var(--ink)}
 .card .mini button:hover{border-color:var(--muted)}
 .hint{color:var(--muted);font-size:.9rem;margin:0}
-.add{width:100%;margin-top:.25rem;padding:.45rem .8rem;border:1px dashed var(--muted);border-radius:4px;background:none;color:var(--ink)}
+.add{width:100%;margin-top:.25rem;padding:.45rem .8rem;border:1px dashed var(--muted);border-radius:var(--radius-sm);background:none;color:var(--ink)}
 .add:hover{background:var(--surface)}
 
 .bar{position:sticky;bottom:0;display:flex;gap:.75rem;align-items:center;justify-content:flex-end;padding:.9rem 0;margin-top:2rem;background:var(--bg);border-top:1px solid var(--line)}
-#status{margin-right:auto;font-family:var(--display);font-size:.85rem;color:var(--muted)}
-#status:not(:empty)::before{content:"> ";color:var(--accent)}
+#status{margin-right:auto;font-family:var(--font-mono);font-size:.85rem;color:var(--muted)}
 #status.err{color:var(--danger)}
 #status.ok{color:var(--ok)}
 
@@ -248,7 +238,7 @@ function typeFields(p) {
 }
 
 /* ---------- CV ---------- */
-const DATES = [["start", "Début", "2024"], ["end", "Fin", "2025"], ["current", "En cours", "", "check"]];
+const DATES = [["start", "Début", "2024 ou Septembre 2024"], ["end", "Fin", "2025 ou Juin 2025"], ["current", "En cours", "", "check"]];
 const CVL = {
   experience: { t: "Expériences", n: "Ajouter une expérience", f: [["role", "Poste"], ["org", "Organisation"], ["place", "Lieu"], ...DATES, ["description", "Détails (une ligne = un point)", "", "list"]] },
   education: { t: "Formation", n: "Ajouter une formation", f: [["degree", "Diplôme / formation"], ["school", "Établissement"], ["place", "Lieu"], ...DATES, ["description", "Détails (une ligne = un point)", "", "list"]] },
@@ -264,10 +254,15 @@ function renderCV() {
   const c = data.cv;
   $("#editor").innerHTML = `
     <h2>CV</h2>
-    <p class="hint">L'onglet « cv » apparaît sur le site dès qu'au moins un champ est rempli.</p>
+    <p class="hint">Le bouton « CV » est toujours visible sur le site. Les onglets Expérience, Formation et Compétences se remplissent avec ce qui est saisi ici. Les dates peuvent s'écrire « 2024 » ou « Septembre 2024 » : la frise chronologique les trie toute seule, du plus récent au plus ancien.</p>
     <label>Intitulé<input data-c="headline" value="${esc(c.headline)}" placeholder="Développeur de jeux, étudiant en…"></label>
     <label>Résumé<textarea data-c="summary" rows="4">${esc(c.summary)}</textarea></label>
-    <label>Lien vers un CV en PDF (optionnel)<input data-c="pdf" value="${esc(c.pdf)}" placeholder="https://…"></label>
+    <fieldset>
+      <legend>CV en PDF (bouton « Télécharger le CV » du site)</legend>
+      <p class="hint">${c.pdf ? "Fichier actuel : <b>" + esc(c.pdf) + "</b>. Il est envoyé au dépôt à la publication." : "Aucun fichier choisi : le bouton de téléchargement n'apparaît pas sur le site."}</p>
+      <label>Choisir un fichier PDF<input type="file" id="pdffile" accept="application/pdf"></label>
+      ${c.pdf ? '<div><button class="btn" data-pdf="remove">Retirer le PDF</button></div>' : ""}
+    </fieldset>
     ${Object.entries(CVL).map(([l, d]) => `
       <fieldset><legend>${d.t}</legend>
         ${(c[l] || []).map((it, i) => `<div class="card">
@@ -394,6 +389,22 @@ $("#editor").addEventListener("click", e => {
   markDirty(); renderImages();
 });
 
+/* PDF du CV : choisi ici, envoyé au dépôt sous le nom cv.pdf à la publication */
+$("#editor").addEventListener("change", async e => {
+  if (e.target.id !== "pdffile") return;
+  const f = e.target.files[0]; if (!f) return;
+  const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result.split(",")[1]); fr.readAsDataURL(f); });
+  if (pending["cv.pdf"]) URL.revokeObjectURL(pending["cv.pdf"].url);
+  pending["cv.pdf"] = { b64, url: URL.createObjectURL(f), check: true };
+  data.cv.pdf = "cv.pdf";
+  markDirty(); renderCV();
+});
+$("#editor").addEventListener("click", e => {
+  if (!e.target.closest("[data-pdf]")) return;
+  data.cv.pdf = "";
+  markDirty(); renderCV();
+});
+
 $("#saveconn").addEventListener("click", () => {
   cfg.repo = $("#repo").value.trim() || cfg.repo;
   if ($("#token").value.trim()) cfg.token = $("#token").value.trim();
@@ -412,10 +423,11 @@ $("#publish").addEventListener("click", async () => {
   const btn = $("#publish"); btn.disabled = true;
   try {
     const used = new Set(data.projects.flatMap(p => p.images || []));
+    if (data.cv && data.cv.pdf) used.add(data.cv.pdf);
     const up = Object.keys(pending).filter(p => used.has(p) && !pending[p].done);
     for (let i = 0; i < up.length; i++) {
-      setStatus(`Envoi des images (${i + 1}/${up.length})…`);
-      await put(up[i], pending[up[i]].b64, "Ajout d'une image", false);
+      setStatus(`Envoi des fichiers (${i + 1}/${up.length})…`);
+      await put(up[i], pending[up[i]].b64, "Ajout d'un fichier", !!pending[up[i]].check);
       pending[up[i]].done = true;
     }
     for (const path of [...toDelete]) {

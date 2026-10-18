@@ -1,0 +1,39 @@
+/* ==========================================================================
+   THEME : couleurs, polices et formes.
+   C'est LE fichier à modifier pour changer le look du site (et de l'admin).
+   La mise en page est dans style.css : normalement pas besoin d'y toucher.
+   ========================================================================== */
+
+/* Polices (Google Fonts). Pour changer de police : modifiez ce lien
+   ET les trois variables --font-* plus bas. */
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root{
+  /* --- Couleurs ------------------------------------------------------- */
+  --bg:#141922;          /* fond de page */
+  --surface:#1A212C;     /* cartes, panneaux */
+  --raised:#222B39;      /* éléments surélevés (survol, onglet actif) */
+  --line:#2A3342;        /* bordures et séparateurs */
+
+  --ink:#EAEEF5;         /* titres, texte important */
+  --text:#B8C1CF;        /* texte courant */
+  --muted:#8793A6;       /* texte secondaire */
+
+  --accent:#5FD0C8;      /* couleur principale (liens, boutons, frise) */
+  --accent-2:#7C9CFF;    /* seconde couleur (dégradés) */
+
+  --ok:#8FD19E;          /* « en cours », succès */
+  --danger:#F08C8C;      /* erreurs, suppression */
+
+  /* --- Polices -------------------------------------------------------- */
+  --font-display:"Space Grotesk",system-ui,sans-serif;                 /* titres */
+  --font-body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;  /* texte */
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; /* petits détails « tech » */
+
+  /* --- Formes --------------------------------------------------------- */
+  --radius:16px;         /* cartes */
+  --radius-sm:10px;      /* boutons, champs */
+  --maxw:1120px;         /* largeur maximale du contenu */
+
+  color-scheme:dark;
+}
