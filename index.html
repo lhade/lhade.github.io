@@ -49,10 +49,12 @@
       <button role="tab" id="ctab-experience" data-cv="experience" aria-selected="true" aria-controls="cv-experience">Expérience <span class="count" id="count-experience"></span></button>
       <button role="tab" id="ctab-education" data-cv="education" aria-selected="false" aria-controls="cv-education">Formation <span class="count" id="count-education"></span></button>
       <button role="tab" id="ctab-skills" data-cv="skills" aria-selected="false" aria-controls="cv-skills">Compétences <span class="count" id="count-skills"></span></button>
+      <button role="tab" id="ctab-interests" data-cv="interests" aria-selected="false" aria-controls="cv-interests" aria-label="Centres d'intérêt"><span class="lbl-full">Centres d'intérêt</span><span class="lbl-short">Intérêts</span> <span class="count" id="count-interests"></span></button>
     </div>
     <div id="cv-experience" role="tabpanel" aria-labelledby="ctab-experience"></div>
     <div id="cv-education" role="tabpanel" aria-labelledby="ctab-education" hidden></div>
     <div id="cv-skills" role="tabpanel" aria-labelledby="ctab-skills" hidden></div>
+    <div id="cv-interests" role="tabpanel" aria-labelledby="ctab-interests" hidden></div>
   </section>
 </main>
 
@@ -91,7 +93,7 @@ const section = (p, s) => {
   return body ? `<section class="sect${s.lead ? " lead" : ""}"><h3>${esc(s.label)}</h3><div class="prose">${body}</div></section>` : "";
 };
 
-const CV_TABS = ["experience", "education", "skills"];
+const CV_TABS = ["experience", "education", "skills", "interests"];
 let data = { profile: {}, projects: [], cv: {} };
 let activeTag = null, activeType = null, view = "projects", cvTab = "experience";
 
@@ -152,7 +154,10 @@ function setCvTab(t, touch = true) {
   cvTab = CV_TABS.includes(t) ? t : "experience";
   $$("[data-cv]").forEach(b => b.setAttribute("aria-selected", b.dataset.cv === cvTab));
   CV_TABS.forEach(k => { $("#cv-" + k).hidden = k !== cvTab; });
-  if (touch) history.replaceState(null, "", "#cv/" + cvTab);
+  if (touch) {
+    history.replaceState(null, "", "#cv/" + cvTab);
+    $("#ctab-" + cvTab).scrollIntoView({ inline: "center", block: "nearest" });
+  }
 }
 
 /* ---------- projets ---------- */
@@ -198,11 +203,11 @@ function openProject(id) {
   const d = def(p), det = p.details || {}, imgs = p.images || [], t = typeOf(p);
   const links = [p.link && ["Voir le projet", p.link, true], p.repo && ["Code source", p.repo, false]].filter(Boolean)
     .map(([l, u, main]) => `<a class="btn${main ? " btn-primary" : ""}" href="${esc(safeUrl(u))}" target="_blank" rel="noopener">${l}</a>`).join("");
+  /* infos clés : seulement celles qui sont renseignées, en pastilles qui passent à la ligne */
   const facts = [];
-  if (p.year) facts.push(["Année", esc(p.year)]);
-  d.facts.forEach(f => { const v = det[f.key]; if (v && String(v).trim()) facts.push([f.label, f.list ? chips(csv(v)) : esc(v)]); });
-  if ((p.tags || []).length) facts.push(["Mots-clés", chips(p.tags)]);
-  const factsHtml = facts.length ? `<dl class="facts">${facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join("")}</dl>` : "";
+  d.facts.forEach(f => { const v = det[f.key]; if (v && String(v).trim()) facts.push([f.label, f.list ? csv(v).join(" · ") : String(v).trim()]); });
+  const factsHtml = facts.length ? `<ul class="facts">${facts.map(([k, v]) => `<li class="fact"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></li>`).join("")}</ul>` : "";
+  const tagsHtml = (p.tags || []).length ? chips(p.tags) : "";
   const secs = d.sections.map(s => [s, section(p, s)]);
   const lead = secs.filter(([s]) => s.lead).map(x => x[1]).join("");
   let rest = secs.filter(([s]) => !s.lead).map(x => x[1]).join("");
@@ -213,11 +218,11 @@ function openProject(id) {
       imgs.length > 1 ? `<div class="thumbs">${imgs.map((s, i) => `<button data-img="${esc(s)}" aria-label="Image ${i + 1}" aria-current="${i === 0}"><img src="${esc(s)}" alt=""></button>`).join("")}</div>` : ""}</div>` : ""}
     <div class="dlg-body">
       <div class="dlg-head">
-        <p class="meta">${t !== "other" ? `<span class="kind" data-t="${t}">${esc(d.label.toLowerCase())}</span>` : ""}</p>
+        <p class="meta">${t !== "other" ? `<span class="kind" data-t="${t}">${esc(d.label.toLowerCase())}</span>` : ""}${p.year ? `<span>${esc(p.year)}</span>` : ""}</p>
         <h2 id="dlg-title">${esc(p.title)}</h2>
         ${state(p)}
       </div>
-      ${factsHtml}
+      <div class="dlg-info">${factsHtml}${tagsHtml}</div>
       ${lead}
       ${rest}
       ${links ? `<p class="dlg-links">${links}</p>` : ""}
@@ -278,20 +283,23 @@ function renderCV() {
   const exp = c.experience || [], edu = c.education || [];
   const skills = (c.skills || []).filter(g => g.label || (g.items || []).length);
   const langs = (c.languages || []).filter(l => (l.name || "").trim());
-  const interests = c.interests || [];
+  const interests = (c.interests || []).map(x => typeof x === "string" ? { label: x } : x).filter(i => (i.label || "").trim());
 
   $("#cv-experience").innerHTML = timeline(exp, "role", "org");
   $("#cv-education").innerHTML = timeline(edu, "degree", "school");
 
   const skillsHtml = (skills.length ? `<div class="skills">${skills.map(g => `
       <div class="skill-card"><h3>${esc(g.label)}</h3>${chips(g.items || [])}</div>`).join("")}</div>` : "")
-    + (langs.length ? `<h3 class="h-sub">Langues</h3><ul class="langs">${langs.map(l => `<li><span>${esc(l.name.trim())}</span>${l.level ? `<span class="lvl">${esc(l.level)}</span>` : ""}</li>`).join("")}</ul>` : "")
-    + (interests.length ? `<h3 class="h-sub">Centres d'intérêt</h3>${chips(interests)}` : "");
+    + (langs.length ? `<h3 class="h-sub">Langues</h3><ul class="langs">${langs.map(l => `<li><span>${esc(l.name.trim())}</span>${l.level ? `<span class="lvl">${esc(l.level)}</span>` : ""}</li>`).join("")}</ul>` : "");
   $("#cv-skills").innerHTML = skillsHtml || '<p class="empty">Rien à afficher pour l\'instant.</p>';
+  $("#cv-interests").innerHTML = interests.length
+    ? `<div class="skills">${interests.map(i => `<div class="skill-card"><h3>${esc(i.label)}</h3>${i.description ? `<div class="prose">${paras(i.description)}</div>` : ""}</div>`).join("")}</div>`
+    : '<p class="empty">Rien à afficher pour l\'instant.</p>';
 
   $("#count-experience").textContent = exp.length || "";
   $("#count-education").textContent = edu.length || "";
   $("#count-skills").textContent = skills.length || "";
+  $("#count-interests").textContent = interests.length || "";
   $$(".count").forEach(c => { c.hidden = !c.textContent; });
 }
 

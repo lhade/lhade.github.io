@@ -97,6 +97,7 @@ main{padding-block:1.5rem 4rem;min-height:50vh}
 .card-media .pill{position:absolute;top:.75rem;left:.75rem;background:color-mix(in srgb,var(--bg) 72%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 .card-body{display:flex;flex-direction:column;gap:.55rem;flex:1;padding:1.1rem 1.25rem 1.35rem}
 .meta{display:flex;gap:.7rem;margin:0;font-family:var(--font-mono);font-size:.74rem;color:var(--muted)}
+.meta:empty{display:none}
 .kind[data-t="game"]{color:var(--accent-2)}
 .kind[data-t="app"]{color:var(--accent)}
 .kind[data-t="other"]{color:var(--accent-3)}
@@ -126,11 +127,15 @@ dialog[open]{animation:pop .25s ease-out}
 .dlg-body{display:grid;gap:1.75rem;padding:clamp(1.5rem,4vw,2.5rem)}
 .dlg-head{display:grid;gap:.75rem;justify-items:start}
 .dlg-head h2{font-size:clamp(1.9rem,4.5vw,2.9rem);line-height:1.08;letter-spacing:-.035em}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;margin:0;border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;background:var(--line)}
-.facts>div{padding:.85rem 1.1rem;background:var(--surface)}
-.facts dt{margin:0 0 .2rem;font-family:var(--font-mono);font-size:.72rem;color:var(--muted)}
-.facts dd{margin:0;color:var(--ink);font-weight:500}
-.facts .chips li{background:var(--raised)}
+.dlg-info{display:grid;gap:.9rem}
+.dlg-info:empty{display:none}
+.facts{display:flex;flex-wrap:wrap;gap:.5rem;margin:0;padding:0;list-style:none}
+.fact{--c:var(--accent);display:inline-flex;align-items:baseline;gap:.55rem;padding:.45rem .9rem;border:1px solid var(--line);border-radius:999px;background:var(--raised)}
+.fact:nth-child(3n+2){--c:var(--accent-2)}
+.fact:nth-child(3n+3){--c:var(--accent-3)}
+.fact::before{content:"";align-self:center;width:.45rem;height:.45rem;border-radius:50%;background:var(--c)}
+.fact .k{font-family:var(--font-mono);font-size:.72rem;color:var(--muted)}
+.fact .v{color:var(--ink);font-weight:500;font-size:.95rem}
 .sect{display:grid;gap:.6rem}
 .sect h3{display:flex;align-items:center;gap:.65rem;font-size:1.05rem}
 .sect h3::before{content:"";width:1.1rem;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--accent-2),var(--accent-3))}
@@ -147,8 +152,10 @@ dialog[open]{animation:pop .25s ease-out}
 .cv-head{display:grid;gap:1.25rem;justify-items:start;margin-bottom:2.25rem}
 .cv-head .prose{color:var(--text);font-size:1.12rem}
 .cv-head .prose p{white-space:normal}
-.subtabs{display:flex;gap:1.75rem;margin:0 0 2.25rem;border-bottom:1px solid var(--line);overflow-x:auto}
+.subtabs{display:flex;gap:1.75rem;margin:0 0 2.25rem;border-bottom:1px solid var(--line);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.subtabs::-webkit-scrollbar{display:none}
 .subtabs button{display:inline-flex;align-items:center;gap:.5rem;margin-bottom:-1px;padding:.7rem 0;border:0;border-bottom:2px solid transparent;background:none;color:var(--muted);font-family:var(--font-display);font-size:1.05rem;font-weight:500;white-space:nowrap;cursor:pointer;transition:color .2s,border-color .2s}
+.lbl-short{display:none}
 .subtabs button:hover{color:var(--ink)}
 .subtabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
 .count{font-family:var(--font-mono);font-size:.72rem;font-weight:400;padding:.15rem .5rem;border-radius:999px;background:var(--raised);color:var(--muted)}
@@ -183,6 +190,7 @@ dialog[open]{animation:pop .25s ease-out}
 .skill-card:nth-child(3n+2){--c:var(--accent-2)}
 .skill-card:nth-child(3n+3){--c:var(--accent-3)}
 .skill-card h3{font-size:1.05rem}
+.skill-card .prose{font-size:.98rem}
 .h-sub{margin:2.5rem 0 1rem;font-size:1.2rem}
 .langs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:.75rem;margin:0;padding:0;list-style:none}
 .langs li{display:flex;justify-content:space-between;gap:1rem;padding:.75rem 1.1rem;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface);color:var(--ink)}
@@ -210,9 +218,11 @@ dialog[open]{animation:pop .25s ease-out}
   .seg button{flex:1}
 }
 @media (max-width:480px){
-  .subtabs{gap:1.1rem}
-  .subtabs button{font-size:.98rem}
+  .subtabs{gap:.6rem}
+  .subtabs button{font-size:.92rem}
   .count{display:none}
+  .lbl-full{display:none}
+  .lbl-short{display:inline}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}

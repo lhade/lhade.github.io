@@ -174,6 +174,8 @@ async function load() {
   data.profile = data.profile || {};
   data.projects = data.projects || [];
   data.cv = { headline: "", summary: "", pdf: "", experience: [], education: [], skills: [], languages: [], interests: [], ...(data.cv || {}) };
+  /* anciens centres d'intérêt (simples mots) -> { label, description } */
+  data.cv.interests = (data.cv.interests || []).map(x => typeof x === "string" ? { label: x, description: "" } : x);
   data.projects.forEach(p => { p.id = p.id || slug(p.title || ""); p.details = p.details || {}; });
   renderSide(); renderEditor();
 }
@@ -243,10 +245,12 @@ const CVL = {
   experience: { t: "Expériences", n: "Ajouter une expérience", f: [["role", "Poste"], ["org", "Organisation"], ["place", "Lieu"], ...DATES, ["description", "Détails (une ligne = un point)", "", "list"]] },
   education: { t: "Formation", n: "Ajouter une formation", f: [["degree", "Diplôme / formation"], ["school", "Établissement"], ["place", "Lieu"], ...DATES, ["description", "Détails (une ligne = un point)", "", "list"]] },
   skills: { t: "Compétences", n: "Ajouter une catégorie", f: [["label", "Catégorie", "Langages, Outils…"], ["items", "Compétences (séparées par des virgules)", "", "csv"]] },
-  languages: { t: "Langues", n: "Ajouter une langue", f: [["name", "Langue"], ["level", "Niveau", "natif, B2…"]] }
+  languages: { t: "Langues", n: "Ajouter une langue", f: [["name", "Langue"], ["level", "Niveau", "natif, B2…"]] },
+  interests: { t: "Centres d'intérêt (onglet à part sur le site)", n: "Ajouter un centre d'intérêt", f: [["label", "Centre d'intérêt", "Jeux vidéo, lecture, cinéma…"], ["description", "Détails (facultatif) : pourquoi, depuis quand, exemples…", "", "area"]] }
 };
 function cvField(attr, k, l, ph, kind, v) {
   if (kind === "check") return `<label class="check"><input type="checkbox" ${attr} data-k="${k}" ${v ? "checked" : ""}>${l}</label>`;
+  if (kind === "area") return `<label style="grid-column:1/-1">${l}<textarea ${attr} data-k="${k}" rows="3">${esc(v)}</textarea></label>`;
   if (kind === "list") return `<label>${l}<textarea ${attr} data-k="${k}" data-kind="list" rows="3">${esc([].concat(v || []).join("\n"))}</textarea></label>`;
   return `<label>${l}<input ${attr} data-k="${k}" data-kind="${kind || ""}" value="${esc(kind === "csv" ? [].concat(v || []).join(", ") : v)}" placeholder="${esc(ph || "")}"></label>`;
 }
@@ -270,8 +274,7 @@ function renderCV() {
           <div class="mini"><button data-cv="up:${l}" data-i="${i}">Monter</button><button data-cv="down:${l}" data-i="${i}">Descendre</button><button data-cv="del:${l}" data-i="${i}">Supprimer</button></div>
         </div>`).join("")}
         <button class="add" data-cv="add:${l}">${d.n}</button>
-      </fieldset>`).join("")}
-    <label>Centres d'intérêt (séparés par des virgules)<input data-c="interests" data-kind="csv" value="${esc((c.interests || []).join(", "))}"></label>`;
+      </fieldset>`).join("")}`;
 }
 
 function renderImages() {
