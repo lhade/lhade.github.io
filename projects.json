@@ -104,6 +104,17 @@
     "pdf": "",
     "experience": [
       {
+        "role": "Employé polyvalent à mi-temps",
+        "current": true,
+        "org": "POKAWA ",
+        "place": "Confluence",
+        "start": "Juillet 2026",
+        "description": [
+          "Travail à mi-temps pour vivre durant mes études",
+          "Missions de restauration rapide"
+        ]
+      },
+      {
         "role": "Alternant développeur",
         "org": "HDTechnology",
         "start": "2021",
@@ -204,10 +215,22 @@
       }
     ],
     "interests": [
-      "Jeux vidéos",
-      "Lecture",
-      "Technologie",
-      "Cinéma"
+      {
+        "label": "Jeux vidéos",
+        "description": "Depuis tout petit, cette passion m'a suivi et évolué avec moi. \nFan de RPG, Roguelike/lite, jeux stratégiques et gacha, je m'intéresse globalement à tout type de jeu et depuis quelques années à leur fonctionnement"
+      },
+      {
+        "label": "Lecture",
+        "description": "Je suis devenu un lecteur assez tôt dans ma vie, je lis tout type de livre : romans, mangas, bd, etc..."
+      },
+      {
+        "label": "Technologie",
+        "description": "Technologies en tout genre : informatique, logicielle, mécanique"
+      },
+      {
+        "label": "Cinéma",
+        "description": "Centre d'intérêt récent, je développe ma culture cinématographique petit à petit"
+      }
     ]
   }
 }
