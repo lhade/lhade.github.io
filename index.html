@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#141922">
+<meta name="theme-color" content="#201F28">
 <title>Portfolio</title>
 <meta name="description" content="Portfolio de projets">
 <link rel="stylesheet" href="theme.css">
@@ -14,7 +14,7 @@
 
 <header class="site-header">
   <div class="wrap">
-    <a class="brand" id="brand" href="./">Portfolio</a>
+    <a class="brand" href="./" aria-label="Accueil"><span class="mono" id="mono">P</span></a>
     <div class="seg" role="tablist" aria-label="Sections du site">
       <button role="tab" id="tab-projects" data-view="projects" aria-selected="true" aria-controls="view-projects">Projets</button>
       <button role="tab" id="tab-cv" data-view="cv" aria-selected="false" aria-controls="view-cv">CV</button>
@@ -24,12 +24,16 @@
 </header>
 
 <section class="hero">
-  <div class="wrap">
-    <p class="eyebrow" id="eyebrow"></p>
-    <h1 id="name">Portfolio</h1>
-    <p class="lead" id="tagline"></p>
-    <div class="bio" id="bio"></div>
-    <ul class="links" id="contact"></ul>
+  <div class="wrap hero-grid">
+    <div class="hero-main">
+      <p class="eyebrow" id="eyebrow"></p>
+      <h1 id="name">Portfolio</h1>
+      <p class="lead" id="tagline"></p>
+    </div>
+    <div class="hero-side">
+      <div class="bio" id="bio"></div>
+      <ul class="links" id="contact"></ul>
+    </div>
   </div>
 </section>
 
@@ -126,7 +130,7 @@ function renderProfile() {
   const p = data.profile || {};
   if (p.name) {
     $("#name").textContent = p.name;
-    $("#brand").textContent = p.name;
+    $("#mono").textContent = p.name.trim().charAt(0).toUpperCase() || "P";
     document.title = p.name;
     $("#copy").textContent = "© " + new Date().getFullYear() + " " + p.name;
   }
@@ -167,7 +171,7 @@ function renderFilters() {
 const card = p => {
   const t = typeOf(p), img = p.images && p.images[0];
   return `
-    <article class="card">
+    <article class="card" data-t="${t}">
       <div class="card-media">
         ${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : `<span class="ph" aria-hidden="true">${esc((p.title || "?").trim()[0] || "?")}</span>`}
         ${p.ongoing ? live : ""}
@@ -247,16 +251,18 @@ const dates = e => {
 const timeline = (list, head, org) => {
   const items = list.filter(e => e[head] || e[org]);
   if (!items.length) return '<p class="empty">Rien à afficher pour l\'instant.</p>';
-  return `<ol class="tl">${byRecent(items).map(e => {
+  /* de gauche à droite : du plus ancien au plus récent, en alternant haut / bas */
+  const sorted = byRecent(items).reverse();
+  return `<div class="htl-scroll"><div class="htl" style="--n:${sorted.length}">${sorted.map((e, i) => {
     const sub = [e[org], e.place].filter(Boolean).map(esc).join('<span class="sep">·</span>');
-    return `<li class="tl-item${e.current ? " is-current" : ""}">
-      <span class="tl-dot" aria-hidden="true"></span>
+    return `<article class="htl-card ${i % 2 ? "down" : "up"}${e.current ? " is-current" : ""}" style="grid-column:${i + 1}">
+      <span class="htl-dot" aria-hidden="true"></span>
       <div class="tl-when">${esc(dates(e))}</div>
       <h3>${esc(e[head])}</h3>
       ${sub ? `<p class="tl-sub">${sub}</p>` : ""}
       ${bullets(e.description)}
-    </li>`;
-  }).join("")}</ol>`;
+    </article>`;
+  }).join("")}</div></div>`;
 };
 
 function renderCV() {

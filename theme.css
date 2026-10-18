@@ -9,21 +9,29 @@
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap");
 
 :root{
-  /* --- Couleurs ------------------------------------------------------- */
-  --bg:#141922;          /* fond de page */
-  --surface:#1A212C;     /* cartes, panneaux */
-  --raised:#222B39;      /* éléments surélevés (survol, onglet actif) */
-  --line:#2A3342;        /* bordures et séparateurs */
+  /* --- Couleurs de base (fond neutre aux reflets prune, moins « tout bleu ») --- */
+  --bg:#201F28;          /* fond de page */
+  --surface:#292833;     /* cartes, panneaux */
+  --raised:#33323F;      /* éléments surélevés (survol, onglet actif) */
+  --line:#3D3C4A;        /* bordures et séparateurs */
 
-  --ink:#EAEEF5;         /* titres, texte important */
-  --text:#B8C1CF;        /* texte courant */
-  --muted:#8793A6;       /* texte secondaire */
+  --ink:#F2F0F7;         /* titres, texte important */
+  --text:#CBC8D6;        /* texte courant */
+  --muted:#9C99AD;       /* texte secondaire */
 
-  --accent:#5FD0C8;      /* couleur principale (liens, boutons, frise) */
-  --accent-2:#7C9CFF;    /* seconde couleur (dégradés) */
+  /* --- Couleurs d'accent (utilisées en alternance pour mettre de la vie) --- */
+  --accent:#5FD0C8;      /* turquoise : liens, boutons */
+  --accent-2:#8C95FF;    /* violet-bleu : dégradés, jeux */
+  --accent-3:#F5A66F;    /* orange chaud : touches de chaleur */
 
   --ok:#8FD19E;          /* « en cours », succès */
   --danger:#F08C8C;      /* erreurs, suppression */
+
+  /* --- Lueurs d'ambiance en fond de page --- */
+  --glow-1:var(--accent);      /* en haut à gauche */
+  --glow-2:var(--accent-2);    /* en haut à droite */
+  --glow-3:var(--accent-3);    /* en bas à droite */
+  --glow-strength:20%;         /* 0% = fond uni, 25% = très coloré */
 
   /* --- Polices -------------------------------------------------------- */
   --font-display:"Space Grotesk",system-ui,sans-serif;                 /* titres */
