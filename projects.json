@@ -153,10 +153,10 @@
         "place": "Lyon",
         "start": "2027",
         "end": "2029",
-        "current": true
+        "current": false
       },
       {
-        "current": true,
+        "current": false,
         "degree": "Bachelor Programmation Informatique spécialité Jeux Vidéos",
         "school": "Gaming Campus",
         "place": "Lyon",
