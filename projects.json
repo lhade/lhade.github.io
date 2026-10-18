@@ -176,6 +176,13 @@
         "start": "2017",
         "end": "2019",
         "current": false
+      },
+      {
+        "degree": "Baccalauréat Technologique STI2D",
+        "school": "Lycée Alfred Kaslter",
+        "place": "Dourdan",
+        "start": "2015",
+        "end": "2017"
       }
     ],
     "skills": [
