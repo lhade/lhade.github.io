@@ -46,17 +46,20 @@
     },
     {
       "id": "test",
-      "title": "Test",
-      "year": "2026",
-      "summary": "",
+      "title": "ERP léger",
+      "year": "2022-2023",
+      "summary": "Outil de coordination au sein d'une entreprise",
       "description": "",
       "tags": [],
-      "ongoing": true,
+      "ongoing": false,
       "link": "",
       "repo": "",
       "images": [],
       "type": "other",
-      "details": {}
+      "details": {
+        "role": "Recueil des besoins, Développement, Mise en ligne du prototype",
+        "team": "Seul"
+      }
     },
     {
       "id": "sark-douls",
