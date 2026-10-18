@@ -148,6 +148,14 @@
     ],
     "education": [
       {
+        "degree": "MSc Développeur de jeu vidéo, rendu 3D temps réel et technologies immersives",
+        "school": "Gaming Campus",
+        "place": "Lyon",
+        "start": "2027",
+        "end": "2029",
+        "current": true
+      },
+      {
         "current": true,
         "degree": "Bachelor Programmation Informatique spécialité Jeux Vidéos",
         "school": "Gaming Campus",
