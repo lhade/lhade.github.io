@@ -155,7 +155,7 @@
   "cv": {
     "headline": "Développeur",
     "summary": "Passionné par la création numérique, j’ai construit mon parcours autour du\ndéveloppement et de la cybersécurité. Aujourd’hui, je me reconvertis dans le\ndéveloppement de jeux vidéo, un domaine qui me passionne depuis mes jeunes\nannées. Je me forme aux moteurs de jeu et aux fondamentaux du game\ndevelopment afin d’évoluer vers un rôle de game developer",
-    "pdf": "",
+    "pdf": "cv.pdf",
     "experience": [
       {
         "role": "Employé polyvalent à mi-temps",
@@ -253,7 +253,8 @@
         "items": [
           "Hardware",
           "Développement web",
-          "SQL"
+          "SQL",
+          "Développement applicatif"
         ]
       },
       {
