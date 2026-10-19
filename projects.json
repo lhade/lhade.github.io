@@ -16,6 +16,27 @@
   },
   "projects": [
     {
+      "id": "proportionate-response-journey",
+      "title": "Proportionate Response Journey",
+      "type": "game",
+      "year": "2026",
+      "summary": "",
+      "description": "",
+      "details": {
+        "engine": "Unity",
+        "genre": "Dungeon Crawler",
+        "platforms": "PC",
+        "mode": "Solo",
+        "role": "Programmation, Game Design",
+        "team": "Binôme "
+      },
+      "tags": [],
+      "ongoing": true,
+      "link": "",
+      "repo": "",
+      "images": []
+    },
+    {
       "id": "modding-wildfrost",
       "title": "Modding Wildfrost",
       "type": "game",
