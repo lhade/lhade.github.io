@@ -28,7 +28,8 @@
         "platforms": "PC",
         "mode": "Solo",
         "role": "Programmation, Game Design",
-        "team": "Binôme "
+        "team": "Binôme ",
+        "pitch": "Incarnez un CRS durant une manifestation violente et trouvez votre chemin dans les rues pour retrouver vos camarades afin de mener une offensive"
       },
       "tags": [
         "c#"
