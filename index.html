@@ -37,13 +37,14 @@
   </div>
 </section>
 
-<main class="wrap">
-  <section id="view-projects" role="tabpanel" aria-labelledby="tab-projects">
+<main>
+  <section id="view-projects" class="wrap" role="tabpanel" aria-labelledby="tab-projects">
     <nav class="filters" id="filters" aria-label="Filtrer les projets" hidden></nav>
     <div class="grid" id="list"><p class="empty">Chargement…</p></div>
   </section>
 
   <section id="view-cv" role="tabpanel" aria-labelledby="tab-cv" hidden>
+    <div class="wrap">
     <div class="cv-head" id="cv-head"></div>
     <div class="subtabs" role="tablist" aria-label="Parties du CV">
       <button role="tab" id="ctab-experience" data-cv="experience" aria-selected="true" aria-controls="cv-experience">Expérience <span class="count" id="count-experience"></span></button>
@@ -51,10 +52,11 @@
       <button role="tab" id="ctab-skills" data-cv="skills" aria-selected="false" aria-controls="cv-skills">Compétences <span class="count" id="count-skills"></span></button>
       <button role="tab" id="ctab-interests" data-cv="interests" aria-selected="false" aria-controls="cv-interests" aria-label="Centres d'intérêt"><span class="lbl-full">Centres d'intérêt</span><span class="lbl-short">Intérêts</span> <span class="count" id="count-interests"></span></button>
     </div>
+    </div>
     <div id="cv-experience" role="tabpanel" aria-labelledby="ctab-experience"></div>
     <div id="cv-education" role="tabpanel" aria-labelledby="ctab-education" hidden></div>
-    <div id="cv-skills" role="tabpanel" aria-labelledby="ctab-skills" hidden></div>
-    <div id="cv-interests" role="tabpanel" aria-labelledby="ctab-interests" hidden></div>
+    <div id="cv-skills" class="wrap" role="tabpanel" aria-labelledby="ctab-skills" hidden></div>
+    <div id="cv-interests" class="wrap" role="tabpanel" aria-labelledby="ctab-interests" hidden></div>
   </section>
 </main>
 
@@ -168,7 +170,7 @@ function renderFilters() {
   const nav = $("#filters");
   nav.hidden = !showTypes && tags.length < 2;
   nav.innerHTML = `<button data-all aria-pressed="${!activeType && !activeTag}">Tout</button>`
-    + (showTypes ? types.map(t => `<button data-type="${esc(t)}" aria-pressed="${activeType === t}">${esc((TYPES[t] || OTHER).plural)}</button>`).join("") : "")
+    + (showTypes ? types.map(t => `<button data-type="${esc(t)}" data-t="${esc(t)}" aria-pressed="${activeType === t}">${esc((TYPES[t] || OTHER).plural)}</button>`).join("") : "")
     + (showTypes && tags.length ? '<span class="sep" aria-hidden="true"></span>' : "")
     + tags.map(t => `<button data-tag="${esc(t)}" aria-pressed="${activeTag === t}">${esc(t)}</button>`).join("");
 }
@@ -216,7 +218,7 @@ function openProject(id) {
     <div class="dlg-top"><button class="x" data-close aria-label="Fermer">${ICON.x}</button></div>
     ${imgs.length ? `<div class="dlg-media"><img id="big" src="${esc(imgs[0])}" alt="${esc(p.title)}">${
       imgs.length > 1 ? `<div class="thumbs">${imgs.map((s, i) => `<button data-img="${esc(s)}" aria-label="Image ${i + 1}" aria-current="${i === 0}"><img src="${esc(s)}" alt=""></button>`).join("")}</div>` : ""}</div>` : ""}
-    <div class="dlg-body">
+    <div class="dlg-body" data-t="${t}">
       <div class="dlg-head">
         <p class="meta">${t !== "other" ? `<span class="kind" data-t="${t}">${esc(d.label.toLowerCase())}</span>` : ""}${p.year ? `<span>${esc(p.year)}</span>` : ""}</p>
         <h2 id="dlg-title">${esc(p.title)}</h2>
@@ -255,7 +257,7 @@ const dates = e => {
 };
 const timeline = (list, head, org) => {
   const items = list.filter(e => e[head] || e[org]);
-  if (!items.length) return '<p class="empty">Rien à afficher pour l\'instant.</p>';
+  if (!items.length) return '<div class="wrap"><p class="empty">Rien à afficher pour l\'instant.</p></div>';
   /* de gauche à droite : du plus ancien au plus récent, en alternant haut / bas */
   const sorted = byRecent(items).reverse();
   return `<div class="htl-scroll"><div class="htl" style="--n:${sorted.length}">${sorted.map((e, i) => {

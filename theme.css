@@ -24,6 +24,18 @@
   --accent-2:#8C95FF;    /* violet-bleu : dégradés, jeux */
   --accent-3:#F5A66F;    /* orange chaud : touches de chaleur */
 
+  /* --- Logique des couleurs : une couleur = un sens (modifiable) --------
+     Turquoise (--accent) = action : liens, boutons, onglet actif, survol.
+     Les autres couleurs servent à repérer une catégorie. */
+  --type-app:var(--accent);         /* projets « app / webapp » */
+  --type-game:var(--accent-2);      /* projets « jeu » */
+  --type-other:var(--accent-3);     /* autres projets */
+
+  --cv-experience:var(--accent);    /* onglet Expérience (frise, cartes, onglet) */
+  --cv-education:var(--accent-2);   /* onglet Formation */
+  --cv-skills:var(--accent-3);      /* onglet Compétences */
+  --cv-interests:color-mix(in srgb,var(--accent-3) 55%,var(--accent-2)); /* onglet Centres d'intérêt */
+
   --ok:#8FD19E;          /* « en cours », succès */
   --danger:#F08C8C;      /* erreurs, suppression */
 
