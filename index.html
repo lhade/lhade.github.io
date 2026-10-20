@@ -6,75 +6,336 @@
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#201F28">
 <title>Portfolio</title>
-<meta name="description" content="Portfolio : projets et CV">
+<meta name="description" content="Portfolio de projets">
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="style.css">
-<script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
 
-<header class="site-header" id="site-header"></header>
-
-<main id="main">
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div class="hero-main">
-        <p class="eyebrow rise" id="eyebrow" style="--d:0"></p>
-        <h1 class="rise" id="name" style="--d:1">Portfolio</h1>
-        <p class="lead rise" id="tagline" style="--d:2"></p>
-        <div class="cta rise" style="--d:3">
-          <a class="btn btn-primary" href="projets.html">Voir les projets</a>
-          <a class="btn" href="cv.html">Mon CV</a>
-        </div>
-      </div>
-      <div class="hero-side rise" style="--d:4">
-        <div class="bio" id="bio"></div>
-        <ul class="links" id="contact"></ul>
-      </div>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="Accueil"><span class="mono" id="mono">P</span></a>
+    <div class="seg" role="tablist" aria-label="Sections du site">
+      <button role="tab" id="tab-projects" data-view="projects" aria-selected="true" aria-controls="view-projects">Projets</button>
+      <button role="tab" id="tab-cv" data-view="cv" aria-selected="false" aria-controls="view-cv">CV</button>
     </div>
+    <div class="header-end"><a class="btn btn-sm" href="admin.html">Admin</a></div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-main">
+      <p class="eyebrow" id="eyebrow"></p>
+      <h1 id="name">Portfolio</h1>
+      <p class="lead" id="tagline"></p>
+    </div>
+    <div class="hero-side">
+      <div class="bio" id="bio"></div>
+      <ul class="links" id="contact"></ul>
+    </div>
+  </div>
+</section>
+
+<main>
+  <section id="view-projects" class="wrap" role="tabpanel" aria-labelledby="tab-projects">
+    <nav class="filters" id="filters" aria-label="Filtrer les projets" hidden></nav>
+    <div class="grid" id="list"><p class="empty">Chargement…</p></div>
   </section>
 
-  <section class="wrap section" id="featured-section" aria-labelledby="featured-title" hidden>
-    <div class="section-head">
-      <h2 id="featured-title">Projets à la une</h2>
-      <a class="more" href="projets.html">Tous les projets →</a>
+  <section id="view-cv" role="tabpanel" aria-labelledby="tab-cv" hidden>
+    <div class="wrap">
+    <div class="cv-head" id="cv-head"></div>
+    <div class="subtabs" role="tablist" aria-label="Parties du CV">
+      <button role="tab" id="ctab-experience" data-cv="experience" aria-selected="true" aria-controls="cv-experience">Expérience <span class="count" id="count-experience"></span></button>
+      <button role="tab" id="ctab-education" data-cv="education" aria-selected="false" aria-controls="cv-education">Formation <span class="count" id="count-education"></span></button>
+      <button role="tab" id="ctab-skills" data-cv="skills" aria-selected="false" aria-controls="cv-skills">Compétences <span class="count" id="count-skills"></span></button>
+      <button role="tab" id="ctab-interests" data-cv="interests" aria-selected="false" aria-controls="cv-interests" aria-label="Centres d'intérêt"><span class="lbl-full">Centres d'intérêt</span><span class="lbl-short">Intérêts</span> <span class="count" id="count-interests"></span></button>
     </div>
-    <div class="grid feature" id="featured"></div>
+    </div>
+    <div id="cv-experience" role="tabpanel" aria-labelledby="ctab-experience"></div>
+    <div id="cv-education" role="tabpanel" aria-labelledby="ctab-education" hidden></div>
+    <div id="cv-skills" class="wrap" role="tabpanel" aria-labelledby="ctab-skills" hidden></div>
+    <div id="cv-interests" class="wrap" role="tabpanel" aria-labelledby="ctab-interests" hidden></div>
   </section>
 </main>
 
-<footer class="site-footer" id="site-footer"></footer>
+<footer class="site-footer"><div class="wrap" id="copy"></div></footer>
+
+<dialog id="dlg" aria-labelledby="dlg-title"><div id="dlg-inner"></div></dialog>
 
 <script src="schema.js"></script>
-<script src="site.js"></script>
 <script>
-(async () => {
-  chrome("home");
-  let data;
-  try { data = await loadData(); } catch (e) { fail($("#main")); return; }
-  applyProfile(data);
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl = u => /^(https?:|mailto:)/i.test(u || "") ? u : "#";
+/* chemins relatifs autorisés (ex. cv.pdf), mais pas javascript: ni data: */
+const safeHref = u => /^\s*(javascript|data|vbscript):/i.test(u || "") ? "#" : (u || "#");
+const paras = t => String(t || "").split(/\n{2,}/).filter(x => x.trim()).map(x => `<p>${esc(x.trim())}</p>`).join("");
+const bullets = a => { const l = (Array.isArray(a) ? a : String(a || "").split("\n")).map(x => String(x).trim()).filter(Boolean); return l.length ? `<ul class="list">${l.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""; };
+const csv = s => (Array.isArray(s) ? s : String(s || "").split(",")).map(x => String(x).trim()).filter(Boolean);
+const chips = a => a.length ? `<ul class="chips">${a.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : "";
 
-  /* anciens liens (index.html#identifiant, index.html#cv/…) -> nouvelles pages */
+const ICON = {
+  dl: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v3h16v-3"/></svg>',
+  x: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>'
+};
+const live = '<span class="pill live"><i></i>en cours</span>';
+const state = p => p.ongoing ? live : '<span class="pill">terminé</span>';
+
+/* types de projets (schema.js) */
+const TYPES = (window.SCHEMA || {}).types || {};
+const OTHER = { label: "Projet", plural: "Autres", code: "projet", facts: [], sections: [{ key: "description", root: true, label: "Description", kind: "long" }] };
+const typeOf = p => TYPES[p.type] ? p.type : "other";
+const def = p => TYPES[typeOf(p)] || OTHER;
+const secVal = (p, s) => s.root ? p[s.key] : (p.details || {})[s.key];
+const section = (p, s) => {
+  const v = secVal(p, s), body = s.kind === "list" ? bullets(v) : paras(v);
+  return body ? `<section class="sect${s.lead ? " lead" : ""}"><h3>${esc(s.label)}</h3><div class="prose">${body}</div></section>` : "";
+};
+
+const CV_TABS = ["experience", "education", "skills", "interests"];
+let data = { profile: {}, projects: [], cv: {} };
+let activeTag = null, activeType = null, view = "projects", cvTab = "experience";
+
+/* ---------- chargement ---------- */
+async function load() {
+  try {
+    const r = await fetch("projects.json", { cache: "no-cache" });
+    if (!r.ok) throw new Error(r.status);
+    data = await r.json();
+  } catch (e) {
+    $("#list").innerHTML = '<p class="empty">Impossible de charger projects.json. Ouvrez le site via GitHub Pages ou un serveur local (pas en double-cliquant sur le fichier).</p>';
+    return;
+  }
+  data.projects = (data.projects || []).slice().sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0));
+  data.cv = data.cv || {};
+  renderProfile();
+  renderCV();
+  renderFilters();
+  renderList();
+  route();
+}
+
+function route() {
   const h = decodeURIComponent(location.hash.slice(1));
-  if (h === "cv" || h.startsWith("cv/")) { location.replace("cv.html" + (h.length > 3 ? "#" + h.slice(3) : "")); return; }
-  const old = h && data.projects.find(x => x.id === h);
-  if (old) { location.replace(projectUrl(old)); return; }
+  if (h === "cv" || h.startsWith("cv/")) {
+    const t = h.slice(3);
+    setView("cv", false);
+    setCvTab(CV_TABS.includes(t) ? t : cvTab, false);
+  } else {
+    setView("projects", false);
+    if (h) openProject(h);
+  }
+}
 
-  const p = data.profile;
-  if (p.name) { $("#name").textContent = p.name; setMeta(p.name + " : portfolio", p.tagline || ""); }
-  $("#eyebrow").textContent = data.cv.headline || "";
+function renderProfile() {
+  const p = data.profile || {};
+  if (p.name) {
+    $("#name").textContent = p.name;
+    $("#mono").textContent = p.name.trim().charAt(0).toUpperCase() || "P";
+    document.title = p.name;
+    $("#copy").textContent = "© " + new Date().getFullYear() + " " + p.name;
+  }
+  $("#eyebrow").textContent = (data.cv && data.cv.headline) || "";
   $("#tagline").textContent = p.tagline || "";
   $("#bio").innerHTML = paras(p.bio);
   $("#contact").innerHTML = (p.links || []).map(l => `<li><a href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener">${esc(l.label)}</a></li>`).join("");
+}
 
-  const list = featuredProjects(data.projects);
-  if (list.length) {
-    $("#featured").style.setProperty("--cols", Math.min(list.length === 4 ? 2 : list.length, 3));
-    $("#featured").innerHTML = list.map((pr, i) => card(pr, i)).join("");
-    $("#featured-section").hidden = false;
-    reveal();
+/* ---------- onglets ---------- */
+function setView(v, touch = true) {
+  view = v === "cv" ? "cv" : "projects";
+  $$("[data-view]").forEach(b => b.setAttribute("aria-selected", b.dataset.view === view));
+  $("#view-projects").hidden = view !== "projects";
+  $("#view-cv").hidden = view !== "cv";
+  if (touch) history.replaceState(null, "", view === "cv" ? "#cv/" + cvTab : location.pathname + location.search);
+}
+function setCvTab(t, touch = true) {
+  cvTab = CV_TABS.includes(t) ? t : "experience";
+  $$("[data-cv]").forEach(b => b.setAttribute("aria-selected", b.dataset.cv === cvTab));
+  CV_TABS.forEach(k => { $("#cv-" + k).hidden = k !== cvTab; });
+  if (touch) {
+    history.replaceState(null, "", "#cv/" + cvTab);
+    $("#ctab-" + cvTab).scrollIntoView({ inline: "center", block: "nearest" });
   }
-})();
+}
+
+/* ---------- projets ---------- */
+function renderFilters() {
+  const types = [...new Set(data.projects.map(typeOf))];
+  const tags = [...new Set(data.projects.flatMap(p => p.tags || []))].sort((a, b) => a.localeCompare(b, "fr"));
+  const showTypes = types.length > 1;
+  const nav = $("#filters");
+  nav.hidden = !showTypes && tags.length < 2;
+  nav.innerHTML = `<button data-all aria-pressed="${!activeType && !activeTag}">Tout</button>`
+    + (showTypes ? types.map(t => `<button data-type="${esc(t)}" data-t="${esc(t)}" aria-pressed="${activeType === t}">${esc((TYPES[t] || OTHER).plural)}</button>`).join("") : "")
+    + (showTypes && tags.length ? '<span class="sep" aria-hidden="true"></span>' : "")
+    + tags.map(t => `<button data-tag="${esc(t)}" aria-pressed="${activeTag === t}">${esc(t)}</button>`).join("");
+}
+
+const card = p => {
+  const t = typeOf(p), img = p.images && p.images[0];
+  return `
+    <article class="card" data-t="${t}">
+      <div class="card-media">
+        ${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : `<span class="ph" aria-hidden="true">${esc((p.title || "?").trim()[0] || "?")}</span>`}
+        ${p.ongoing ? live : ""}
+      </div>
+      <div class="card-body">
+        <p class="meta">${t !== "other" ? `<span class="kind" data-t="${t}">${esc(def(p).label.toLowerCase())}</span>` : ""}${p.year ? `<span>${esc(p.year)}</span>` : ""}</p>
+        <h3><button data-id="${esc(p.id)}">${esc(p.title)}</button></h3>
+        ${p.summary ? `<p class="summary">${esc(p.summary)}</p>` : ""}
+        ${chips(p.tags || [])}
+      </div>
+    </article>`;
+};
+
+function renderList() {
+  const items = data.projects.filter(p => (!activeTag || (p.tags || []).includes(activeTag)) && (!activeType || typeOf(p) === activeType));
+  $("#list").innerHTML = items.length
+    ? items.map(card).join("")
+    : `<p class="empty">${data.projects.length ? "Aucun projet pour ce filtre." : "Aucun projet pour l'instant. Ajoutez-en depuis la page admin."}</p>`;
+}
+
+function openProject(id) {
+  const p = data.projects.find(x => x.id === id);
+  if (!p) return;
+  const d = def(p), det = p.details || {}, imgs = p.images || [], t = typeOf(p);
+  const links = [p.link && ["Voir le projet", p.link, true], p.repo && ["Code source", p.repo, false]].filter(Boolean)
+    .map(([l, u, main]) => `<a class="btn${main ? " btn-primary" : ""}" href="${esc(safeUrl(u))}" target="_blank" rel="noopener">${l}</a>`).join("");
+  /* infos clés : seulement celles qui sont renseignées, en pastilles qui passent à la ligne */
+  const facts = [];
+  d.facts.forEach(f => { const v = det[f.key]; if (v && String(v).trim()) facts.push([f.label, f.list ? csv(v).join(" · ") : String(v).trim()]); });
+  const factsHtml = facts.length ? `<ul class="facts">${facts.map(([k, v]) => `<li class="fact"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></li>`).join("")}</ul>` : "";
+  const tagsHtml = (p.tags || []).length ? chips(p.tags) : "";
+  const secs = d.sections.map(s => [s, section(p, s)]);
+  const lead = secs.filter(([s]) => s.lead).map(x => x[1]).join("");
+  let rest = secs.filter(([s]) => !s.lead).map(x => x[1]).join("");
+  if (!lead && !rest && p.summary) rest = `<div class="prose">${paras(p.summary)}</div>`;
+  $("#dlg-inner").innerHTML = `
+    <div class="dlg-top"><button class="x" data-close aria-label="Fermer">${ICON.x}</button></div>
+    ${imgs.length ? `<div class="dlg-media"><img id="big" src="${esc(imgs[0])}" alt="${esc(p.title)}">${
+      imgs.length > 1 ? `<div class="thumbs">${imgs.map((s, i) => `<button data-img="${esc(s)}" aria-label="Image ${i + 1}" aria-current="${i === 0}"><img src="${esc(s)}" alt=""></button>`).join("")}</div>` : ""}</div>` : ""}
+    <div class="dlg-body" data-t="${t}">
+      <div class="dlg-head">
+        <p class="meta">${t !== "other" ? `<span class="kind" data-t="${t}">${esc(d.label.toLowerCase())}</span>` : ""}${p.year ? `<span>${esc(p.year)}</span>` : ""}</p>
+        <h2 id="dlg-title">${esc(p.title)}</h2>
+        ${state(p)}
+      </div>
+      <div class="dlg-info">${factsHtml}${tagsHtml}</div>
+      ${lead}
+      ${rest}
+      ${links ? `<p class="dlg-links">${links}</p>` : ""}
+    </div>`;
+  $("#dlg").showModal();
+  history.replaceState(null, "", "#" + encodeURIComponent(id));
+}
+
+/* ---------- CV ---------- */
+const MONTHS = ["janv", "f[ée]vr", "mars", "avr", "mai", "juin", "juil", "ao[uû]t", "sept", "oct", "nov", "d[ée]c"].map(m => new RegExp(m));
+/* « Septembre 2024 » ou « 2024 » -> nombre comparable (null si pas d'année) */
+const when = s => {
+  s = String(s || "").toLowerCase();
+  const y = s.match(/(?:19|20)\d{2}/);
+  if (!y) return null;
+  const m = MONTHS.findIndex(re => re.test(s));
+  return +y[0] * 12 + Math.max(m, 0);
+};
+const rank = e => [e.current ? 1 : 0, when(e.start) ?? -1, when(e.end) ?? -1];
+/* plus récent en premier ; « en cours » tout en haut ; à égalité, l'ordre saisi dans l'admin */
+const byRecent = list => list.map((e, i) => [e, i]).sort(([a, i], [b, j]) => {
+  const x = rank(a), y = rank(b);
+  for (let k = 0; k < 3; k++) if (x[k] !== y[k]) return y[k] - x[k];
+  return i - j;
+}).map(([e]) => e);
+
+const dates = e => {
+  const s = (e.start || "").trim(), t = e.current ? "présent" : (e.end || "").trim();
+  return s && t ? `${s} — ${t}` : s || t;
+};
+const timeline = (list, head, org) => {
+  const items = list.filter(e => e[head] || e[org]);
+  if (!items.length) return '<div class="wrap"><p class="empty">Rien à afficher pour l\'instant.</p></div>';
+  /* de gauche à droite : du plus ancien au plus récent, en alternant haut / bas */
+  const sorted = byRecent(items).reverse();
+  return `<div class="htl-scroll"><div class="htl" style="--n:${sorted.length}">${sorted.map((e, i) => {
+    const sub = [e[org], e.place].filter(Boolean).map(esc).join('<span class="sep">·</span>');
+    return `<article class="htl-card ${i % 2 ? "down" : "up"}${e.current ? " is-current" : ""}" style="grid-column:${i + 1}">
+      <span class="htl-dot" aria-hidden="true"></span>
+      <div class="tl-when">${esc(dates(e))}</div>
+      <h3>${esc(e[head])}</h3>
+      ${sub ? `<p class="tl-sub">${sub}</p>` : ""}
+      ${bullets(e.description)}
+    </article>`;
+  }).join("")}</div></div>`;
+};
+
+function renderCV() {
+  const c = data.cv || {};
+  const name = ((data.profile || {}).name || "").trim();
+  const pdf = c.pdf
+    ? `<a class="btn btn-primary" href="${esc(safeHref(c.pdf))}" download="${esc(name ? "CV - " + name + ".pdf" : "CV.pdf")}">${ICON.dl}Télécharger le CV</a>`
+    : "";
+  $("#cv-head").innerHTML = (c.summary ? `<div class="prose">${paras(c.summary)}</div>` : "")
+    + pdf;
+  $("#cv-head").hidden = !c.summary && !pdf;
+
+  const exp = c.experience || [], edu = c.education || [];
+  const skills = (c.skills || []).filter(g => g.label || (g.items || []).length);
+  const langs = (c.languages || []).filter(l => (l.name || "").trim());
+  const interests = (c.interests || []).map(x => typeof x === "string" ? { label: x } : x).filter(i => (i.label || "").trim());
+
+  $("#cv-experience").innerHTML = timeline(exp, "role", "org");
+  $("#cv-education").innerHTML = timeline(edu, "degree", "school");
+
+  const skillsHtml = (skills.length ? `<div class="skills">${skills.map(g => `
+      <div class="skill-card"><h3>${esc(g.label)}</h3>${chips(g.items || [])}</div>`).join("")}</div>` : "")
+    + (langs.length ? `<h3 class="h-sub">Langues</h3><ul class="langs">${langs.map(l => `<li><span>${esc(l.name.trim())}</span>${l.level ? `<span class="lvl">${esc(l.level)}</span>` : ""}</li>`).join("")}</ul>` : "");
+  $("#cv-skills").innerHTML = skillsHtml || '<p class="empty">Rien à afficher pour l\'instant.</p>';
+  $("#cv-interests").innerHTML = interests.length
+    ? `<div class="skills">${interests.map(i => `<div class="skill-card"><h3>${esc(i.label)}</h3>${i.description ? `<div class="prose">${paras(i.description)}</div>` : ""}</div>`).join("")}</div>`
+    : '<p class="empty">Rien à afficher pour l\'instant.</p>';
+
+  $("#count-experience").textContent = exp.length || "";
+  $("#count-education").textContent = edu.length || "";
+  $("#count-skills").textContent = skills.length || "";
+  $("#count-interests").textContent = interests.length || "";
+  $$(".count").forEach(c => { c.hidden = !c.textContent; });
+}
+
+/* ---------- événements ---------- */
+$$("[data-view]").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
+$$("[data-cv]").forEach(b => b.addEventListener("click", () => setCvTab(b.dataset.cv)));
+document.addEventListener("keydown", e => {
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  const t = e.target.closest('[role="tab"]'); if (!t) return;
+  const tabs = [...t.parentElement.querySelectorAll('[role="tab"]')];
+  const n = tabs[(tabs.indexOf(t) + (e.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length];
+  n.focus(); n.click();
+});
+$("#filters").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if ("all" in b.dataset) activeType = activeTag = null;
+  else if (b.dataset.type) activeType = activeType === b.dataset.type ? null : b.dataset.type;
+  else if (b.dataset.tag) activeTag = activeTag === b.dataset.tag ? null : b.dataset.tag;
+  renderFilters(); renderList();
+});
+$("#list").addEventListener("click", e => {
+  const b = e.target.closest("[data-id]"); if (b) openProject(b.dataset.id);
+});
+$("#dlg").addEventListener("click", e => {
+  if (e.target === e.currentTarget || e.target.closest("[data-close]")) e.currentTarget.close();
+  const t = e.target.closest("[data-img]");
+  if (t) {
+    $("#big").src = t.dataset.img;
+    $$(".thumbs button").forEach(x => x.setAttribute("aria-current", x === t));
+  }
+});
+$("#dlg").addEventListener("close", () => history.replaceState(null, "", location.pathname + location.search));
+
+load();
 </script>
 </body>
 </html>
