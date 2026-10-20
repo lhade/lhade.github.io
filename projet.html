@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#201F28">
+<title>Projet</title>
+<meta name="description" content="Fiche d'un projet">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add("js")</script>
+</head>
+<body>
+
+<header class="site-header" id="site-header"></header>
+
+<main id="main"></main>
+
+<footer class="site-footer" id="site-footer"></footer>
+
+<dialog class="lightbox" id="lightbox" aria-label="Image agrandie">
+  <button class="x" data-close aria-label="Fermer"></button>
+  <img alt="">
+</dialog>
+
+<script src="schema.js"></script>
+<script src="site.js"></script>
+<script>
+/* Regroupement des infos du schéma : « role » et « team » -> bloc Mon rôle ; moteur, plateformes,
+   stack -> Technologies ; le reste -> Informations. Les sections « tech » et « challenges »
+   passent après le bloc Mon rôle. Rien n'est affiché si l'information n'est pas renseignée. */
+const FACT_GROUP = { role: "role", team: "role", engine: "tech", platforms: "tech", stack: "tech" };
+const AFTER_ROLE = new Set(["tech", "challenges"]);
+
+const back = '<a class="back" href="projets.html"><span aria-hidden="true">←</span> Tous les projets</a>';
+
+(async () => {
+  chrome("projects");
+  $("#lightbox .x").innerHTML = ICON.x;
+  let data;
+  try { data = await loadData(); } catch (e) { fail($("#main")); return; }
+  applyProfile(data);
+
+  const id = new URLSearchParams(location.search).get("id");
+  const p = data.projects.find(x => x.id === id);
+  if (!p) {
+    setMeta("Projet introuvable");
+    $("#main").innerHTML = `<div class="wrap">${back}<div class="page-head"><h1>Projet introuvable</h1><p class="lead">Ce projet n'existe pas ou a été supprimé.</p></div></div>`;
+    return;
+  }
+  const name = ((data.profile || {}).name || "").trim();
+  setMeta(p.title + (name ? " · " + name : ""), p.summary || "");
+
+  const d = def(p), det = p.details || {}, t = typeOf(p), imgs = p.images || [];
+
+  /* infos renseignées, rangées par groupe */
+  const groups = { info: [], tech: [], role: [] };
+  d.facts.forEach(f => {
+    const raw = det[f.key];
+    const s = Array.isArray(raw) ? raw.join(", ") : String(raw ?? "").trim();
+    if (s) groups[FACT_GROUP[f.key] || "info"].push([f, f.list ? csv(s) : s]);
+  });
+  const get = key => (groups.role.find(([f]) => f.key === key) || [])[1];
+
+  /* colonne latérale : technologies, informations, mots-clés */
+  const dl = rows => `<dl class="a-list">${rows.map(([f, v]) => `<div><dt>${esc(f.label)}</dt><dd>${Array.isArray(v) ? chips(v) : esc(v)}</dd></div>`).join("")}</dl>`;
+  const block = (title, inner) => inner ? `<section class="a-block"><h2>${title}</h2>${inner}</section>` : "";
+  const aside = block("Technologies", groups.tech.length ? dl(groups.tech) : "")
+    + block("Informations", groups.info.length ? dl(groups.info) : "")
+    + block("Mots-clés", chips(p.tags || []));
+
+  /* colonne principale : concept et gameplay, mon rôle, partie technique */
+  const sec = s => section(p, s);
+  const rest = d.sections.filter(s => !s.lead);
+  const roleV = get("role"), teamV = get("team");
+  const roleHtml = roleV || teamV
+    ? `<section class="role"><h2>${roleV ? "Mon rôle" : "Équipe"}</h2><p class="role-main">${esc(roleV || teamV)}</p>${roleV && teamV ? `<p class="role-team">Équipe : ${esc(teamV)}</p>` : ""}</section>`
+    : "";
+  const main = d.sections.filter(s => s.lead).map(sec).join("")
+    + rest.filter(s => !AFTER_ROLE.has(s.key)).map(sec).join("")
+    + roleHtml
+    + rest.filter(s => AFTER_ROLE.has(s.key)).map(sec).join("");
+
+  const links = [p.link && ["Voir le projet", p.link, true], p.repo && ["Code source", p.repo, false]].filter(Boolean)
+    .map(([l, u, primary]) => `<a class="btn${primary ? " btn-primary" : ""}" href="${esc(safeUrl(u))}" target="_blank" rel="noopener">${l}</a>`).join("");
+
+  const hero = imgs.length
+    ? `<figure class="proj-hero reveal"><button class="zoom" data-src="${esc(imgs[0])}" aria-label="Agrandir l'image"><img src="${esc(imgs[0])}" alt="Image du projet ${esc(p.title)}" fetchpriority="high"></button></figure>`
+    : "";
+  const more = imgs.slice(1);
+  const gallery = more.length
+    ? `<section class="gallery" aria-labelledby="gal-title"><h2 id="gal-title">Galerie</h2><div class="gallery-grid">${more.map((s, i) =>
+        `<button class="shot reveal" style="--i:${i % 4}" data-src="${esc(s)}" aria-label="Agrandir l'image ${i + 2}"><img src="${esc(s)}" alt="Image ${i + 2} du projet ${esc(p.title)}" loading="lazy"></button>`).join("")}</div></section>`
+    : "";
+
+  $("#main").innerHTML = `
+    <div class="wrap" data-t="${t}">
+      ${back}
+      <header class="proj-head">
+        <p class="meta rise">${t !== "other" ? `<span class="kind">${esc(d.label.toLowerCase())}</span>` : ""}${p.year ? `<span>${esc(p.year)}</span>` : ""}${state(p)}</p>
+        <h1 class="rise" style="--d:1">${esc(p.title)}</h1>
+        ${p.summary ? `<p class="proj-summary rise" style="--d:2">${esc(p.summary)}</p>` : ""}
+        ${links ? `<div class="proj-actions rise" style="--d:3">${links}</div>` : ""}
+      </header>
+      ${hero}
+      ${main
+        ? `<div class="proj-grid"><div class="proj-main">${main}</div>${aside ? `<aside class="proj-aside" aria-label="Informations sur le projet">${aside}</aside>` : ""}</div>`
+        : (aside ? `<aside class="proj-aside" aria-label="Informations sur le projet">${aside}</aside>` : "")}
+      ${gallery}
+      <div class="proj-foot"><a class="btn" href="projets.html">← Tous les projets</a></div>
+    </div>`;
+  reveal();
+})();
+
+/* visionneuse : un clic sur une image l'agrandit, un clic n'importe où la ferme (Échap aussi) */
+const box = $("#lightbox");
+document.addEventListener("click", e => {
+  const z = e.target.closest(".zoom, .shot");
+  if (!z) return;
+  const img = box.querySelector("img");
+  img.src = z.dataset.src;
+  img.alt = z.querySelector("img").alt;
+  box.showModal();
+});
+box.addEventListener("click", () => box.close());
+</script>
+</body>
+</html>
