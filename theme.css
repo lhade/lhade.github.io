@@ -23,6 +23,7 @@
   --accent:#5FD0C8;      /* turquoise : liens, boutons */
   --accent-2:#8C95FF;    /* violet-bleu : dégradés, jeux */
   --accent-3:#F5A66F;    /* orange chaud : touches de chaleur */
+  --accent-4:#F28FB8;    /* rose : fin du dégradé de la frise Formation */
 
   /* --- Logique des couleurs : une couleur = un sens (modifiable) --------
      Turquoise (--accent) = action : liens, boutons, onglet actif, survol.
@@ -31,8 +32,11 @@
   --type-game:var(--accent-2);      /* projets « jeu » */
   --type-other:var(--accent-3);     /* autres projets */
 
-  --cv-experience:var(--accent);    /* onglet Expérience (frise, cartes, onglet) */
-  --cv-education:var(--accent-2);   /* onglet Formation */
+  /* Frise (Expérience, Formation) : dégradé du « début » (le plus ancien) vers la « fin »
+     (le plus récent / en cours). Chaque point prend exactement la couleur de la ligne à son
+     emplacement. Gardez deux couleurs voisines pour un dégradé harmonieux. */
+  --cv-experience:var(--accent);      --cv-experience-end:var(--accent-2);   /* turquoise -> bleu-violet */
+  --cv-education:var(--accent-2);     --cv-education-end:var(--accent-4);    /* bleu-violet -> rose */
   --cv-skills:var(--accent-3);      /* onglet Compétences */
   --cv-interests:color-mix(in srgb,var(--accent-3) 55%,var(--accent-2)); /* onglet Centres d'intérêt */
 

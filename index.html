@@ -9,6 +9,7 @@
 <meta name="description" content="Portfolio de projets">
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
 
@@ -26,11 +27,11 @@
 <section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-main">
-      <p class="eyebrow" id="eyebrow"></p>
-      <h1 id="name">Portfolio</h1>
-      <p class="lead" id="tagline"></p>
+      <p class="eyebrow rise" id="eyebrow" style="--d:0"></p>
+      <h1 class="rise" id="name" style="--d:1">Portfolio</h1>
+      <p class="lead rise" id="tagline" style="--d:2"></p>
     </div>
-    <div class="hero-side">
+    <div class="hero-side rise" style="--d:3">
       <div class="bio" id="bio"></div>
       <ul class="links" id="contact"></ul>
     </div>
@@ -175,10 +176,10 @@ function renderFilters() {
     + tags.map(t => `<button data-tag="${esc(t)}" aria-pressed="${activeTag === t}">${esc(t)}</button>`).join("");
 }
 
-const card = p => {
+const card = (p, i = 0) => {
   const t = typeOf(p), img = p.images && p.images[0];
   return `
-    <article class="card" data-t="${t}">
+    <article class="card reveal" data-t="${t}" style="--i:${i % 6}">
       <div class="card-media">
         ${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : `<span class="ph" aria-hidden="true">${esc((p.title || "?").trim()[0] || "?")}</span>`}
         ${p.ongoing ? live : ""}
@@ -197,6 +198,18 @@ function renderList() {
   $("#list").innerHTML = items.length
     ? items.map(card).join("")
     : `<p class="empty">${data.projects.length ? "Aucun projet pour ce filtre." : "Aucun projet pour l'instant. Ajoutez-en depuis la page admin."}</p>`;
+  reveal();
+}
+
+/* apparition progressive des cartes (discrète) : une carte s'affiche quand elle entre à l'écran ;
+   celles qu'on a déjà dépassées en défilant sont affichées tout de suite */
+function reveal() {
+  const els = $$(".reveal:not(.in)");
+  if (!("IntersectionObserver" in window)) { els.forEach(e => e.classList.add("in")); return; }
+  const io = new IntersectionObserver(entries => entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+  }), { rootMargin: "100000px 0px -6% 0px" });
+  els.forEach(e => io.observe(e));
 }
 
 function openProject(id) {
@@ -260,9 +273,11 @@ const timeline = (list, head, org) => {
   if (!items.length) return '<div class="wrap"><p class="empty">Rien à afficher pour l\'instant.</p></div>';
   /* de gauche à droite : du plus ancien au plus récent, en alternant haut / bas */
   const sorted = byRecent(items).reverse();
+  /* position de chaque carte sur le dégradé : 0 % (le plus ancien) -> 100 % (le plus récent) */
+  const pct = k => sorted.length > 1 ? Math.max(0, Math.min(100, Math.round(k / (sorted.length - 1) * 1000) / 10)) : 100;
   return `<div class="htl-scroll"><div class="htl" style="--n:${sorted.length}">${sorted.map((e, i) => {
     const sub = [e[org], e.place].filter(Boolean).map(esc).join('<span class="sep">·</span>');
-    return `<article class="htl-card ${i % 2 ? "down" : "up"}${e.current ? " is-current" : ""}" style="grid-column:${i + 1}">
+    return `<article class="htl-card ${i % 2 ? "down" : "up"}${e.current ? " is-current" : ""}" style="grid-column:${i + 1};--k:${i};--t:${pct(i)}%;--tn:${pct(i + 1)}%;--tp:${pct(i - 1)}%">
       <span class="htl-dot" aria-hidden="true"></span>
       <div class="tl-when">${esc(dates(e))}</div>
       <h3>${esc(e[head])}</h3>

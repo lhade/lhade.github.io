@@ -30,6 +30,8 @@ button{font:inherit;color:inherit}
 #cv-education,[data-cv="education"]{--tab:var(--cv-education)}
 #cv-skills,[data-cv="skills"]{--tab:var(--cv-skills)}
 #cv-interests,[data-cv="interests"]{--tab:var(--cv-interests)}
+#cv-experience{--from:var(--cv-experience);--to:var(--cv-experience-end)}
+#cv-education{--from:var(--cv-education);--to:var(--cv-education-end)}
 
 /* barres de défilement : fines, arrondies, aux couleurs du site */
 @supports not selector(::-webkit-scrollbar){
@@ -179,18 +181,23 @@ dialog[open]{animation:pop .25s ease-out}
 .subtabs button[aria-selected="true"] .count{background:color-mix(in srgb,var(--tab,var(--accent)) 18%,transparent);color:var(--tab,var(--accent))}
 
 /* frise chronologique : une carte en haut, la suivante en bas.
-   Une seule couleur (celle de l'onglet) : le passé est estompé, le présent est vif.
-   Elle peut s'élargir au-delà du cadre central, jusqu'aux bords de l'écran, puis défiler. */
+   Dégradé de la couleur « début » (--from) à la couleur « fin » (--to), réglées dans theme.css.
+   Chaque carte reçoit sa couleur (--c) selon sa position, et trace elle-même le morceau de ligne
+   qui la relie à la carte suivante (de --c à --cn) : le point et la ligne ont donc toujours
+   exactement la même couleur. Elle peut s'élargir au-delà du cadre central, puis défiler. */
 .htl-scroll{overflow-x:auto;padding:.25rem 0 1.5rem}
 .htl{--gap:3.5rem;--col:270px;--colgap:1rem;--need:calc(var(--n) * var(--col) + (var(--n) - 1) * var(--colgap));
   box-sizing:content-box;position:relative;display:grid;
   width:max(min(var(--maxw) - 2 * var(--gutter), 100% - 2 * var(--gutter)), var(--need));
   margin-inline:auto;padding-inline:var(--gutter);
   grid-template-columns:repeat(var(--n),minmax(0,1fr));grid-template-rows:auto var(--gap) auto;column-gap:var(--colgap)}
-.htl::before{content:"";grid-row:2;grid-column:1/-1;align-self:center;height:3px;border-radius:3px;background:linear-gradient(90deg,color-mix(in srgb,var(--tab) 28%,var(--line)),var(--tab))}
-.htl-card{--c:var(--tab);position:relative;padding:1.2rem 1.3rem 1.3rem;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);box-shadow:inset 0 3px 0 var(--c)}
+.htl-card{--c:color-mix(in srgb,var(--to) var(--t,100%),var(--from));--cn:color-mix(in srgb,var(--to) var(--tn,100%),var(--from));--cp:color-mix(in srgb,var(--to) var(--tp,0%),var(--from));position:relative;padding:1.2rem 1.3rem 1.3rem;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);box-shadow:inset 0 3px 0 var(--c)}
 .htl-card.up{grid-row:1;align-self:end}
 .htl-card.down{grid-row:3;align-self:start}
+.htl-card::before{content:"";position:absolute;left:50%;width:calc(100% + var(--colgap));height:3px;border-radius:3px;background:linear-gradient(90deg,var(--c),var(--cn));background:linear-gradient(in srgb 90deg,var(--c),var(--cn))}
+.htl-card.up::before{top:calc(100% + var(--gap) / 2 - 1.5px)}
+.htl-card.down::before{top:calc(var(--gap) / -2 - 1.5px)}
+.htl-card:last-child::before{display:none}
 .htl-card::after{content:"";position:absolute;left:50%;width:2px;height:calc(var(--gap) / 2);background:var(--c);opacity:.6;transform:translateX(-50%)}
 .htl-card.up::after{top:100%}
 .htl-card.down::after{bottom:100%}
@@ -229,7 +236,8 @@ dialog[open]{animation:pop .25s ease-out}
   /* frise : repasse en colonne (la plus récente en haut) */
   .htl-scroll{overflow:visible}
   .htl{display:flex;flex-direction:column-reverse;gap:1.25rem;width:auto;box-sizing:border-box;margin:0;padding:0 var(--gutter) 0 calc(var(--gutter) + 1.75rem)}
-  .htl::before{position:absolute;left:calc(var(--gutter) + .5rem);top:.5rem;bottom:.5rem;width:3px;height:auto;align-self:stretch;background:linear-gradient(180deg,var(--tab),color-mix(in srgb,var(--tab) 28%,var(--line)))}
+  .htl-card::before,.htl-card.up::before,.htl-card.down::before,.htl-card:last-child::before{display:block;left:-1.25rem;top:1.4rem;width:3px;height:calc(100% + 1.25rem);background:linear-gradient(180deg,var(--c),var(--cp));background:linear-gradient(in srgb 180deg,var(--c),var(--cp))}
+  .htl-card:first-child::before{display:none}
   .htl-card.up,.htl-card.down{align-self:auto}
   .htl-card::after{display:none}
   .htl-card .htl-dot,.htl-card.up .htl-dot,.htl-card.down .htl-dot{left:calc(-1.25rem + 1.5px);top:1.4rem}
@@ -248,6 +256,21 @@ dialog[open]{animation:pop .25s ease-out}
   .lbl-full{display:none}
   .lbl-short{display:inline}
 }
+/* ---------- animations discrètes ----------
+   .rise    : la présentation apparaît au chargement de la page
+   .reveal  : une carte de projet apparaît quand elle entre à l'écran (classe « in » ajoutée par index.html)
+   panneaux : léger fondu quand on change de section (Projets / CV / sous-onglets)
+   frise    : les cartes apparaissent l'une après l'autre quand on ouvre Expérience ou Formation
+   Tout est coupé automatiquement pour les personnes qui ont demandé « moins d'animations ». */
+@keyframes rise{from{opacity:0;translate:0 14px}}
+@keyframes fade{from{opacity:0}}
+.rise{animation:rise .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--d,0) * 90ms)}
+.js .reveal{opacity:0}
+.js .reveal.in{opacity:1;animation:rise .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0) * 70ms)}
+#view-projects:not([hidden]),#view-cv:not([hidden]),#cv-skills:not([hidden]),#cv-interests:not([hidden]){animation:fade .4s ease-out}
+.htl-card{animation:rise .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--k,0) * 90ms)}
+dialog[open]::backdrop{animation:fade .25s ease-out}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
