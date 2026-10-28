@@ -149,7 +149,8 @@
           "Loot",
           "Multijoueur"
         ],
-        "challenges": "Premier projet donc beaucoup de découverte, mais nous avons obtenus un résultat assez satisfaisant pour le délais accordé"
+        "challenges": "Premier projet donc beaucoup de découverte, mais nous avons obtenus un résultat assez satisfaisant pour le délais accordé",
+        "duration": "2 semaines"
       }
     }
   ],
@@ -302,6 +303,7 @@
         "label": "Cinéma",
         "description": "Centre d'intérêt récent, je développe ma culture cinématographique petit à petit"
       }
-    ]
+    ],
+    "about": []
   }
 }
