@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#201F28">
+<title>Page introuvable</title>
+<meta name="description" content="Fiche d'un projet">
+<!-- GitHub Pages sert ce fichier pour toute adresse inconnue, dont /projets/<identifiant> : les adresses ci-dessous sont donc absolues. -->
+<link rel="stylesheet" href="/theme.css?v=20261024">
+<link rel="stylesheet" href="/style.css?v=20261024">
+<script>document.documentElement.classList.add("js")</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Accueil"><span class="mono" id="mono">P</span></a>
+    <nav class="seg" aria-label="Sections du site">
+      <a href="/" id="nav-projects">Projets</a>
+      <a href="/#cv/experience">CV</a>
+    </nav>
+    <div class="header-end"><a class="btn btn-sm" href="/admin.html">Admin</a></div>
+  </div>
+</header>
+
+<main class="proj" id="main"><div class="wrap"><p class="empty">Chargement…</p></div></main>
+
+<footer class="site-footer"><div class="wrap" id="copy"></div></footer>
+
+<dialog class="lightbox" id="lightbox" aria-label="Image agrandie">
+  <button class="x" data-close aria-label="Fermer"></button>
+  <img alt="">
+</dialog>
+
+<script src="/schema.js?v=20261024"></script>
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl = u => /^(https?:|mailto:)/i.test(u || "") ? u : "#";
+const paras = t => String(t || "").split(/\n{2,}/).filter(x => x.trim()).map(x => `<p>${esc(x.trim())}</p>`).join("");
+const bullets = a => { const l = (Array.isArray(a) ? a : String(a || "").split("\n")).map(x => String(x).trim()).filter(Boolean); return l.length ? `<ul class="list">${l.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""; };
+const csv = s => (Array.isArray(s) ? s : String(s || "").split(",")).map(x => String(x).trim()).filter(Boolean);
+const chips = a => a.length ? `<ul class="chips">${a.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : "";
+const X = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+const live = '<span class="pill live"><i></i>en cours</span>';
+const state = p => p.ongoing ? live : '<span class="pill">terminé</span>';
+
+/* types de projets (schema.js) : les champs affichés viennent de là */
+const TYPES = (window.SCHEMA || {}).types || {};
+const OTHER = { label: "Projet", plural: "Autres", code: "projet", facts: [], sections: [{ key: "description", root: true, label: "Description", kind: "long" }] };
+const typeOf = p => TYPES[p.type] ? p.type : "other";
+const def = p => TYPES[typeOf(p)] || OTHER;
+const secVal = (p, s) => s.root ? p[s.key] : (p.details || {})[s.key];
+const section = (p, s) => {
+  const v = secVal(p, s), body = s.kind === "list" ? bullets(v) : paras(v);
+  return body ? `<section class="sect${s.lead ? " lead" : ""}"><h2>${esc(s.label)}</h2><div class="prose">${body}</div></section>` : "";
+};
+
+/* apparition progressive des images de la galerie (discrète) */
+function reveal() {
+  const els = $$(".reveal:not(.in)");
+  if (!("IntersectionObserver" in window)) { els.forEach(e => e.classList.add("in")); return; }
+  const io = new IntersectionObserver(entries => entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+  }), { rootMargin: "100000px 0px -6% 0px" });
+  els.forEach(e => io.observe(e));
+}
+
+/* adresse d'un fichier : toujours depuis la racine du site, quelle que soit l'adresse de la page */
+const asset = u => /^(https?:|data:|blob:|\/)/i.test(u || "") ? u : "/" + String(u || "").replace(/^\.?\//, "");
+const back = '<a class="back" href="/"><span aria-hidden="true">←</span> Tous les projets</a>';
+
+(async () => {
+  $("#lightbox .x").innerHTML = X;
+  let data;
+  try {
+    const r = await fetch("/projects.json", { cache: "no-cache" });
+    if (!r.ok) throw new Error(r.status);
+    data = await r.json();
+  } catch (e) {
+    $("#main").innerHTML = '<div class="wrap"><p class="empty">Impossible de charger projects.json. Ouvrez le site via GitHub Pages ou un serveur local (pas en double-cliquant sur le fichier).</p></div>';
+    return;
+  }
+  const name = ((data.profile || {}).name || "").trim();
+  if (name) {
+    $("#mono").textContent = name.charAt(0).toUpperCase();
+    $("#copy").textContent = "© " + new Date().getFullYear() + " " + name;
+  }
+
+  /* adresses acceptées : /projets/<identifiant> (la liste des projets est sur la page d'accueil) ; toute autre adresse = « Page introuvable » */
+  if (/^\/projets\/?$/.test(location.pathname)) { location.replace("/"); return; }
+  const m = location.pathname.match(/^\/projets\/([^\/]+)\/?$/);
+  const id = m ? decodeURIComponent(m[1]) : null;
+  const p = id && (data.projects || []).find(x => x.id === id || x.id.toLowerCase() === id.toLowerCase());
+  if (!p) {
+    const isProject = !!m;
+    document.title = (isProject ? "Projet introuvable" : "Page introuvable") + (name ? " · " + name : "");
+    $("#main").innerHTML = `<div class="wrap">${back}<div class="proj-head"><h1>${isProject ? "Projet introuvable" : "Page introuvable"}</h1><p class="proj-summary">${isProject ? "Ce projet n'existe pas ou a été supprimé." : "Cette adresse n'existe pas."}</p></div></div>`;
+    return;
+  }
+  $("#nav-projects").setAttribute("aria-current", "page");
+  document.title = p.title + (name ? " · " + name : "");
+  const meta = document.querySelector('meta[name="description"]');
+  if (meta && p.summary) meta.setAttribute("content", p.summary);
+
+  const d = def(p), det = p.details || {}, imgs = p.images || [], t = typeOf(p);
+
+  /* boutons : projet, code source, vidéo (seulement ceux qui sont renseignés) */
+  const video = String(det.video || "").trim();
+  const links = [
+    p.link && ["Voir le projet", p.link, true],
+    p.repo && ["Code source", p.repo, false],
+    video && ["Voir la vidéo", video, false]
+  ].filter(Boolean).filter(([, u]) => safeUrl(u) !== "#")
+    .map(([l, u, main]) => `<a class="btn${main ? " btn-primary" : ""}" href="${esc(safeUrl(u))}" target="_blank" rel="noopener">${l}</a>`).join("");
+
+  /* infos clés : seulement celles qui sont renseignées, en pastilles qui passent à la ligne */
+  const facts = [];
+  d.facts.filter(f => f.key !== "video").forEach(f => {
+    const raw = det[f.key];
+    const s = Array.isArray(raw) ? raw.join(", ") : String(raw ?? "").trim();
+    if (s) facts.push([f.label, f.list ? csv(s).join(" · ") : s]);
+  });
+  const factsHtml = facts.length ? `<ul class="facts">${facts.map(([k, v]) => `<li class="fact"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></li>`).join("")}</ul>` : "";
+  const tagsHtml = (p.tags || []).length ? chips(p.tags) : "";
+
+  /* sections de texte : celles du schéma qui sont remplies, dans l'ordre */
+  const secs = d.sections.map(s => [s, section(p, s)]);
+  const lead = secs.filter(([s]) => s.lead).map(x => x[1]).join("");
+  const rest = secs.filter(([s]) => !s.lead).map(x => x[1]).join("");
+
+  /* galerie : toutes les images, la première en grand */
+  const gallery = imgs.length
+    ? `<section class="gallery"${imgs.length > 1 ? ' aria-labelledby="gal-title"' : ' aria-label="Image du projet"'}>${imgs.length > 1 ? '<h2 id="gal-title">Galerie</h2>' : ""}<div class="gallery-grid">${imgs.map((s, i) =>
+        `<button class="shot reveal" style="--i:${i % 4}" data-src="${esc(asset(s))}" aria-label="Agrandir l'image ${i + 1}"><img src="${esc(asset(s))}" alt="Image ${i + 1} du projet ${esc(p.title)}" loading="lazy"></button>`).join("")}</div></section>`
+    : "";
+
+  $("#main").innerHTML = `
+    <section class="proj-hero" data-t="${t}">
+      ${imgs.length ? `<div class="proj-bg" aria-hidden="true"><img src="${esc(asset(imgs[0]))}" alt=""></div>` : ""}
+      <div class="wrap">
+        ${back}
+        <header class="proj-head">
+          <p class="meta rise">${t !== "other" ? `<span class="kind">${esc(d.label.toLowerCase())}</span>` : ""}${p.year ? `<span>${esc(p.year)}</span>` : ""}${state(p)}</p>
+          <h1 class="rise" style="--d:1">${esc(p.title)}</h1>
+          ${p.summary ? `<p class="proj-summary rise" style="--d:2">${esc(p.summary)}</p>` : ""}
+          ${links ? `<div class="proj-actions rise" style="--d:3">${links}</div>` : ""}
+        </header>
+      </div>
+    </section>
+    <div class="wrap proj-body" data-t="${t}">
+      <div class="proj-info">${factsHtml}${tagsHtml}</div>
+      ${lead || rest ? `<div class="proj-text">${lead}${rest}</div>` : ""}
+      ${gallery}
+      <div class="proj-foot"><a class="btn" href="/"><span aria-hidden="true">←</span> Tous les projets</a></div>
+    </div>`;
+  reveal();
+})();
+
+/* visionneuse : un clic sur une image l'agrandit, un clic n'importe où la ferme (Échap aussi) */
+const box = $("#lightbox");
+document.addEventListener("click", e => {
+  const z = e.target.closest(".shot");
+  if (!z) return;
+  const img = box.querySelector("img");
+  img.src = z.dataset.src;
+  img.alt = z.querySelector("img").alt;
+  box.showModal();
+});
+box.addEventListener("click", () => box.close());
+</script>
+</body>
+</html>
