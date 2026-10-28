@@ -38,6 +38,7 @@
   --cv-experience:var(--accent);      --cv-experience-end:var(--accent-2);   /* turquoise -> bleu-violet */
   --cv-education:var(--accent-2);     --cv-education-end:var(--accent-4);    /* bleu-violet -> rose */
   --cv-skills:var(--accent-3);      /* onglet Compétences */
+  --cv-about:var(--accent);                                                  /* turquoise */
   --cv-interests:color-mix(in srgb,var(--accent-3) 55%,var(--accent-2)); /* onglet Centres d'intérêt */
 
   --ok:#8FD19E;          /* « en cours », succès */

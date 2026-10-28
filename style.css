@@ -30,6 +30,7 @@ button{font:inherit;color:inherit}
 #cv-education,[data-cv="education"]{--tab:var(--cv-education)}
 #cv-skills,[data-cv="skills"]{--tab:var(--cv-skills)}
 #cv-interests,[data-cv="interests"]{--tab:var(--cv-interests)}
+#cv-about,[data-cv="about"]{--tab:var(--cv-about)}
 #cv-experience{--from:var(--cv-experience);--to:var(--cv-experience-end)}
 #cv-education{--from:var(--cv-education);--to:var(--cv-education-end)}
 
@@ -72,9 +73,9 @@ button{font:inherit;color:inherit}
 
 /* onglets principaux (segmented control) */
 .seg{display:inline-flex;gap:.2rem;padding:.25rem;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
-.seg button{border:0;background:none;padding:.4rem 1.1rem;border-radius:999px;color:var(--muted);font-size:.92rem;font-weight:500;cursor:pointer;transition:color .2s,background .2s}
-.seg button:hover{color:var(--ink)}
-.seg button[aria-selected="true"]{background:var(--raised);color:var(--accent)}
+.seg button,.seg a{border:0;background:none;padding:.4rem 1.1rem;border-radius:999px;color:var(--muted);font-size:.92rem;font-weight:500;text-decoration:none;cursor:pointer;transition:color .2s,background .2s}
+.seg button:hover,.seg a:hover{color:var(--ink)}
+.seg button[aria-selected="true"],.seg a[aria-current="page"]{background:var(--raised);color:var(--accent)}
 
 /* ---------- hero (compact : les projets restent le sujet) ---------- */
 .hero{padding-block:clamp(1.75rem,4vw,3rem) .5rem}
@@ -99,6 +100,7 @@ button{font:inherit;color:inherit}
 
 /* ---------- contenu ---------- */
 main{padding-block:1.5rem 4rem;min-height:50vh}
+main.proj{padding-top:0}
 
 /* filtres */
 .filters{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 2rem}
@@ -123,41 +125,41 @@ main{padding-block:1.5rem 4rem;min-height:50vh}
 .meta:empty{display:none}
 .kind{color:var(--tc,var(--muted))}
 .card h3{font-size:1.25rem;line-height:1.25}
-.card h3 button{all:unset;cursor:pointer}
-.card h3 button::after{content:"";position:absolute;inset:0}
-.card:hover h3 button{color:var(--tc,var(--accent))}
-.card h3 button:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:4px}
+.stretch{color:inherit;text-decoration:none}
+.stretch::after{content:"";position:absolute;inset:0}
+.stretch:focus-visible{outline:none}
+.card:has(.stretch:focus-visible){outline:2px solid var(--accent);outline-offset:3px}
+.card:hover .stretch{color:var(--tc,var(--accent))}
 .summary{margin:0;color:var(--text)}
 .card .chips{margin-top:auto;padding-top:.5rem}
 
-/* ---------- fiche projet (dialog) ---------- */
-dialog{width:min(980px,calc(100% - 2rem));max-height:calc(100dvh - 2rem);padding:0;border:1px solid var(--line);border-radius:calc(var(--radius) + 4px);background:var(--surface);color:var(--text);overflow:auto}
-dialog::backdrop{background:rgb(8 11 16/.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-dialog[open]{animation:pop .25s ease-out}
-@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.985)}}
-.dlg-top{position:sticky;top:0;z-index:2;height:0;display:flex;justify-content:flex-end;pointer-events:none}
-.x{pointer-events:auto;margin:.85rem;display:grid;place-items:center;width:2.4rem;height:2.4rem;border:1px solid var(--line);border-radius:50%;background:color-mix(in srgb,var(--bg) 78%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--ink);cursor:pointer;transition:border-color .2s,color .2s}
-.x:hover{border-color:var(--accent);color:var(--accent)}
-.dlg-media{background:var(--bg)}
-.dlg-media #big{display:block;width:100%;max-height:58vh;object-fit:contain}
-.thumbs{display:flex;flex-wrap:wrap;gap:.5rem;padding:.75rem 1.25rem;background:var(--bg);border-top:1px solid var(--line)}
-.thumbs button{width:76px;height:54px;padding:0;border:2px solid transparent;border-radius:8px;overflow:hidden;background:none;cursor:pointer;opacity:.55;transition:opacity .2s,border-color .2s}
-.thumbs button:hover{opacity:.9}
-.thumbs button[aria-current="true"]{border-color:var(--accent);opacity:1}
-.thumbs img{display:block;width:100%;height:100%;object-fit:cover}
-.dlg-body{display:grid;gap:1.75rem;padding:clamp(1.5rem,4vw,2.5rem)}
-.dlg-head{display:grid;gap:.75rem;justify-items:start}
-.dlg-head h2{font-size:clamp(1.9rem,4.5vw,2.9rem);line-height:1.08;letter-spacing:-.035em}
-.dlg-info{display:grid;gap:.9rem}
-.dlg-info:empty{display:none}
+/* ---------- page projet (projet.html) ---------- */
+main.proj{padding-bottom:4rem}
+/* en-tête : la première image du projet en fond, transparente, qui s'estompe vers le bas */
+.proj-hero{position:relative;isolation:isolate;overflow:hidden;padding-block:clamp(1.25rem,3vw,2rem) clamp(2rem,5vw,3.5rem)}
+.proj-bg{position:absolute;inset:0;z-index:-1;pointer-events:none;-webkit-mask-image:linear-gradient(to bottom,#000 50%,transparent);mask-image:linear-gradient(to bottom,#000 50%,transparent)}
+.proj-bg img{display:block;width:100%;height:100%;object-fit:cover;opacity:.36;filter:blur(2px) saturate(1.05);transform:scale(1.04);animation:fade 1s ease-out both}
+.proj-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--bg) 60%,transparent),transparent 75%)}
+.back{display:inline-flex;align-items:center;gap:.5rem;color:var(--muted);font-size:.92rem;text-decoration:none;transition:color .2s}
+.back:hover{color:var(--accent)}
+.back span{transition:transform .2s}
+.back:hover span{transform:translateX(-3px)}
+.proj-head{display:grid;gap:.9rem;justify-items:start;padding-top:clamp(1.5rem,4vw,2.5rem)}
+.proj-head h1{font-size:clamp(2.2rem,5.5vw,3.75rem);line-height:1.02;letter-spacing:-.04em;overflow-wrap:anywhere}
+.proj-summary{max-width:48ch;margin:0;font-size:clamp(1.1rem,1.9vw,1.3rem);line-height:1.45;color:var(--ink)}
+.proj-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:.6rem}
+.proj-body{display:grid;gap:clamp(2rem,4vw,3rem);padding-top:clamp(1.5rem,4vw,2.5rem)}
+.proj-info{display:grid;gap:.9rem}
+.proj-info:empty{display:none}
+.proj-text{display:grid;gap:clamp(1.75rem,3vw,2.25rem)}
 .facts{display:flex;flex-wrap:wrap;gap:.5rem;margin:0;padding:0;list-style:none}
 .fact{display:inline-flex;align-items:baseline;gap:.55rem;padding:.45rem .9rem;border:1px solid var(--line);border-radius:999px;background:var(--raised)}
 .fact::before{content:"";align-self:center;width:.45rem;height:.45rem;border-radius:50%;background:var(--tc,var(--accent))}
-.fact .k{font-family:var(--font-mono);font-size:.72rem;color:var(--muted)}
+.fact .k{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);white-space:nowrap}
 .fact .v{color:var(--ink);font-weight:500;font-size:.95rem}
 .sect{display:grid;gap:.6rem}
-.sect h3{display:flex;align-items:center;gap:.65rem;font-size:1.05rem}
-.sect h3::before{content:"";width:1.1rem;height:2px;border-radius:2px;background:var(--tc,var(--accent))}
+.sect h2,.sect h3{display:flex;align-items:center;gap:.65rem;font-size:1.25rem}
+.sect h2::before,.sect h3::before{content:"";width:1.1rem;height:2px;border-radius:2px;background:var(--tc,var(--accent))}
 .prose{max-width:68ch}
 .prose p{margin:0 0 1em;white-space:pre-line}
 .prose p:last-child{margin-bottom:0}
@@ -165,7 +167,23 @@ dialog[open]{animation:pop .25s ease-out}
 .list{display:grid;gap:.4rem;max-width:68ch;margin:0;padding:0;list-style:none}
 .list li{position:relative;padding-left:1.35rem}
 .list li::before{content:"";position:absolute;left:.15rem;top:.72em;width:.4rem;height:.4rem;border-radius:50%;background:var(--tc,var(--accent))}
-.dlg-links{display:flex;flex-wrap:wrap;gap:.75rem;margin:0}
+/* galerie : la première image en grand, les suivantes sur deux colonnes */
+.gallery h2{margin-bottom:1.25rem;font-size:1.35rem;letter-spacing:-.02em}
+.gallery-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.shot{display:block;padding:0;border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;background:var(--bg);cursor:zoom-in}
+.shot:first-child{grid-column:1/-1}
+.shot img{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;transition:transform .5s}
+.shot:hover img{transform:scale(1.02)}
+.proj-foot{padding-top:.5rem}
+
+/* visionneuse d'image : un clic agrandit, un clic ferme */
+.lightbox{width:min(1280px,96vw);max-width:none;max-height:none;padding:0;border:0;background:transparent;overflow:visible;color:var(--ink)}
+.lightbox::backdrop{background:rgb(8 11 16/.86);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.lightbox[open]{animation:fade .2s ease-out}
+.lightbox[open]::backdrop{animation:fade .25s ease-out}
+.lightbox img{display:block;max-width:100%;max-height:88dvh;margin:auto;border-radius:12px;cursor:zoom-out}
+.x{position:fixed;top:1rem;right:1rem;display:grid;place-items:center;width:2.5rem;height:2.5rem;border:1px solid var(--line);border-radius:50%;background:color-mix(in srgb,var(--bg) 80%,transparent);color:var(--ink);cursor:pointer;transition:border-color .2s,color .2s}
+.x:hover{border-color:var(--accent);color:var(--accent)}
 
 /* ---------- CV ---------- */
 .cv-head{display:grid;gap:1.25rem;justify-items:start;margin-bottom:2.25rem}
@@ -173,6 +191,7 @@ dialog[open]{animation:pop .25s ease-out}
 .cv-head .prose p{white-space:normal}
 .subtabs{display:flex;gap:1.75rem;margin:0 0 2.25rem;border-bottom:1px solid var(--line);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
 .subtabs::-webkit-scrollbar{display:none}
+.subtabs.has-more{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent)}
 .subtabs button{display:inline-flex;align-items:center;gap:.5rem;margin-bottom:-1px;padding:.7rem 0;border:0;border-bottom:2px solid transparent;background:none;color:var(--muted);font-family:var(--font-display);font-size:1.05rem;font-weight:500;white-space:nowrap;cursor:pointer;transition:color .2s,border-color .2s}
 .lbl-short{display:none}
 .subtabs button:hover{color:var(--ink)}
@@ -247,7 +266,10 @@ dialog[open]{animation:pop .25s ease-out}
   .brand{flex:1 1 auto}
   .header-end{flex:0 0 auto;order:2}
   .seg{order:3;width:100%}
-  .seg button{flex:1}
+  .seg button,.seg a{flex:1;text-align:center}
+}
+@media (max-width:640px){
+  .gallery-grid{grid-template-columns:1fr}
 }
 @media (max-width:480px){
   .subtabs{gap:.6rem}
@@ -269,7 +291,6 @@ dialog[open]{animation:pop .25s ease-out}
 .js .reveal.in{opacity:1;animation:rise .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0) * 70ms)}
 #view-projects:not([hidden]),#view-cv:not([hidden]),#cv-skills:not([hidden]),#cv-interests:not([hidden]){animation:fade .4s ease-out}
 .htl-card{animation:rise .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--k,0) * 90ms)}
-dialog[open]::backdrop{animation:fade .25s ease-out}
 
 /* ---------- survol doux ----------
    Les éléments qui ne sont pas des liens réagissent quand même un peu au passage de la souris :
@@ -285,7 +306,7 @@ dialog[open]::backdrop{animation:fade .25s ease-out}
   .htl-card:hover::after{opacity:1}
   .langs li:hover{border-color:color-mix(in srgb,var(--tab,var(--accent)) 55%,var(--line));background:var(--raised)}
   .fact:hover{border-color:color-mix(in srgb,var(--tc,var(--accent)) 55%,var(--line))}
-  .skill-card .chips li:hover,dialog .chips li:hover{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));color:var(--ink)}
+  .skill-card .chips li:hover,.proj-body .chips li:hover{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));color:var(--ink)}
 }
 @media (hover:hover) and (prefers-reduced-motion:no-preference){
   .htl-card:hover .htl-dot{transform:translate(-50%,-50%) scale(1.3)}

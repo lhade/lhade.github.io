@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <meta name="color-scheme" content="dark">
 <title>Administration</title>
-<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="theme.css?v=20261024">
 <style>
 :root{--display:var(--font-display);--body:var(--font-body)}
 *{box-sizing:border-box}
@@ -111,7 +111,7 @@ figure button:hover,.btn:hover{border-color:var(--muted)}
   </div>
 </div>
 
-<script src="schema.js"></script>
+<script src="schema.js?v=20261024"></script>
 <script>
 (() => {
 const $ = s => document.querySelector(s);
@@ -173,7 +173,7 @@ async function load() {
   }
   data.profile = data.profile || {};
   data.projects = data.projects || [];
-  data.cv = { headline: "", summary: "", pdf: "", experience: [], education: [], skills: [], languages: [], interests: [], ...(data.cv || {}) };
+  data.cv = { headline: "", summary: "", pdf: "", experience: [], education: [], skills: [], languages: [], interests: [], about: [], ...(data.cv || {}) };
   /* anciens centres d'intérêt (simples mots) -> { label, description } */
   data.cv.interests = (data.cv.interests || []).map(x => typeof x === "string" ? { label: x, description: "" } : x);
   data.projects.forEach(p => { p.id = p.id || slug(p.title || ""); p.details = p.details || {}; });
@@ -246,7 +246,8 @@ const CVL = {
   education: { t: "Formation", n: "Ajouter une formation", f: [["degree", "Diplôme / formation"], ["school", "Établissement"], ["place", "Lieu"], ...DATES, ["description", "Détails (une ligne = un point)", "", "list"]] },
   skills: { t: "Compétences", n: "Ajouter une catégorie", f: [["label", "Catégorie", "Langages, Outils…"], ["items", "Compétences (séparées par des virgules)", "", "csv"]] },
   languages: { t: "Langues", n: "Ajouter une langue", f: [["name", "Langue"], ["level", "Niveau", "natif, B2…"]] },
-  interests: { t: "Centres d'intérêt (onglet à part sur le site)", n: "Ajouter un centre d'intérêt", f: [["label", "Centre d'intérêt", "Jeux vidéo, lecture, cinéma…"], ["description", "Détails (facultatif) : pourquoi, depuis quand, exemples…", "", "area"]] }
+  interests: { t: "Centres d'intérêt (onglet à part sur le site)", n: "Ajouter un centre d'intérêt", f: [["label", "Centre d'intérêt", "Jeux vidéo, lecture, cinéma…"], ["description", "Détails (facultatif) : pourquoi, depuis quand, exemples…", "", "area"]] },
+  about: { t: "À propos de moi (onglet à part sur le site)", n: "Ajouter un bloc", f: [["title", "Titre", "Ce que je recherche, ma façon de travailler, mon parcours…"], ["text", "Texte", "", "area"]] }
 };
 function cvField(attr, k, l, ph, kind, v) {
   if (kind === "check") return `<label class="check"><input type="checkbox" ${attr} data-k="${k}" ${v ? "checked" : ""}>${l}</label>`;

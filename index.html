@@ -7,8 +7,8 @@
 <meta name="theme-color" content="#201F28">
 <title>Portfolio</title>
 <meta name="description" content="Portfolio de projets">
-<link rel="stylesheet" href="theme.css">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="theme.css?v=20261024">
+<link rel="stylesheet" href="style.css?v=20261024">
 <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
@@ -52,20 +52,20 @@
       <button role="tab" id="ctab-education" data-cv="education" aria-selected="false" aria-controls="cv-education">Formation <span class="count" id="count-education"></span></button>
       <button role="tab" id="ctab-skills" data-cv="skills" aria-selected="false" aria-controls="cv-skills">Compétences <span class="count" id="count-skills"></span></button>
       <button role="tab" id="ctab-interests" data-cv="interests" aria-selected="false" aria-controls="cv-interests" aria-label="Centres d'intérêt"><span class="lbl-full">Centres d'intérêt</span><span class="lbl-short">Intérêts</span> <span class="count" id="count-interests"></span></button>
+      <button role="tab" id="ctab-about" data-cv="about" aria-selected="false" aria-controls="cv-about">À propos <span class="count" id="count-about"></span></button>
     </div>
     </div>
     <div id="cv-experience" role="tabpanel" aria-labelledby="ctab-experience"></div>
     <div id="cv-education" role="tabpanel" aria-labelledby="ctab-education" hidden></div>
     <div id="cv-skills" class="wrap" role="tabpanel" aria-labelledby="ctab-skills" hidden></div>
     <div id="cv-interests" class="wrap" role="tabpanel" aria-labelledby="ctab-interests" hidden></div>
+    <div id="cv-about" class="wrap" role="tabpanel" aria-labelledby="ctab-about" hidden></div>
   </section>
 </main>
 
 <footer class="site-footer"><div class="wrap" id="copy"></div></footer>
 
-<dialog id="dlg" aria-labelledby="dlg-title"><div id="dlg-inner"></div></dialog>
-
-<script src="schema.js"></script>
+<script src="schema.js?v=20261024"></script>
 <script>
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -83,20 +83,14 @@ const ICON = {
   x: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>'
 };
 const live = '<span class="pill live"><i></i>en cours</span>';
-const state = p => p.ongoing ? live : '<span class="pill">terminé</span>';
 
 /* types de projets (schema.js) */
 const TYPES = (window.SCHEMA || {}).types || {};
 const OTHER = { label: "Projet", plural: "Autres", code: "projet", facts: [], sections: [{ key: "description", root: true, label: "Description", kind: "long" }] };
 const typeOf = p => TYPES[p.type] ? p.type : "other";
 const def = p => TYPES[typeOf(p)] || OTHER;
-const secVal = (p, s) => s.root ? p[s.key] : (p.details || {})[s.key];
-const section = (p, s) => {
-  const v = secVal(p, s), body = s.kind === "list" ? bullets(v) : paras(v);
-  return body ? `<section class="sect${s.lead ? " lead" : ""}"><h3>${esc(s.label)}</h3><div class="prose">${body}</div></section>` : "";
-};
 
-const CV_TABS = ["experience", "education", "skills", "interests"];
+const CV_TABS = ["experience", "education", "skills", "interests", "about"];
 let data = { profile: {}, projects: [], cv: {} };
 let activeTag = null, activeType = null, view = "projects", cvTab = "experience";
 
@@ -126,8 +120,10 @@ function route() {
     setView("cv", false);
     setCvTab(CV_TABS.includes(t) ? t : cvTab, false);
   } else {
+    /* ancien lien index.html#identifiant -> page du projet */
+    const pr = h && data.projects.find(x => x.id === h);
+    if (pr) { location.replace("projet.html?id=" + encodeURIComponent(pr.id)); return; }
     setView("projects", false);
-    if (h) openProject(h);
   }
 }
 
@@ -151,7 +147,13 @@ function setView(v, touch = true) {
   $$("[data-view]").forEach(b => b.setAttribute("aria-selected", b.dataset.view === view));
   $("#view-projects").hidden = view !== "projects";
   $("#view-cv").hidden = view !== "cv";
+  tabsHint();
   if (touch) history.replaceState(null, "", view === "cv" ? "#cv/" + cvTab : location.pathname + location.search);
+}
+/* sous-onglets : un léger dégradé à droite tant qu'il reste des onglets à faire défiler (petits écrans) */
+function tabsHint() {
+  const s = $(".subtabs");
+  s.classList.toggle("has-more", s.scrollLeft + s.clientWidth < s.scrollWidth - 2);
 }
 function setCvTab(t, touch = true) {
   cvTab = CV_TABS.includes(t) ? t : "experience";
@@ -161,7 +163,10 @@ function setCvTab(t, touch = true) {
     history.replaceState(null, "", "#cv/" + cvTab);
     $("#ctab-" + cvTab).scrollIntoView({ inline: "center", block: "nearest" });
   }
+  tabsHint();
 }
+$(".subtabs").addEventListener("scroll", tabsHint, { passive: true });
+window.addEventListener("resize", tabsHint);
 
 /* ---------- projets ---------- */
 function renderFilters() {
@@ -186,7 +191,7 @@ const card = (p, i = 0) => {
       </div>
       <div class="card-body">
         <p class="meta">${t !== "other" ? `<span class="kind" data-t="${t}">${esc(def(p).label.toLowerCase())}</span>` : ""}${p.year ? `<span>${esc(p.year)}</span>` : ""}</p>
-        <h3><button data-id="${esc(p.id)}">${esc(p.title)}</button></h3>
+        <h3><a class="stretch" href="projet.html?id=${esc(encodeURIComponent(p.id))}">${esc(p.title)}</a></h3>
         ${p.summary ? `<p class="summary">${esc(p.summary)}</p>` : ""}
         ${chips(p.tags || [])}
       </div>
@@ -210,40 +215,6 @@ function reveal() {
     if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
   }), { rootMargin: "100000px 0px -6% 0px" });
   els.forEach(e => io.observe(e));
-}
-
-function openProject(id) {
-  const p = data.projects.find(x => x.id === id);
-  if (!p) return;
-  const d = def(p), det = p.details || {}, imgs = p.images || [], t = typeOf(p);
-  const links = [p.link && ["Voir le projet", p.link, true], p.repo && ["Code source", p.repo, false]].filter(Boolean)
-    .map(([l, u, main]) => `<a class="btn${main ? " btn-primary" : ""}" href="${esc(safeUrl(u))}" target="_blank" rel="noopener">${l}</a>`).join("");
-  /* infos clés : seulement celles qui sont renseignées, en pastilles qui passent à la ligne */
-  const facts = [];
-  d.facts.forEach(f => { const v = det[f.key]; if (v && String(v).trim()) facts.push([f.label, f.list ? csv(v).join(" · ") : String(v).trim()]); });
-  const factsHtml = facts.length ? `<ul class="facts">${facts.map(([k, v]) => `<li class="fact"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></li>`).join("")}</ul>` : "";
-  const tagsHtml = (p.tags || []).length ? chips(p.tags) : "";
-  const secs = d.sections.map(s => [s, section(p, s)]);
-  const lead = secs.filter(([s]) => s.lead).map(x => x[1]).join("");
-  let rest = secs.filter(([s]) => !s.lead).map(x => x[1]).join("");
-  if (!lead && !rest && p.summary) rest = `<div class="prose">${paras(p.summary)}</div>`;
-  $("#dlg-inner").innerHTML = `
-    <div class="dlg-top"><button class="x" data-close aria-label="Fermer">${ICON.x}</button></div>
-    ${imgs.length ? `<div class="dlg-media"><img id="big" src="${esc(imgs[0])}" alt="${esc(p.title)}">${
-      imgs.length > 1 ? `<div class="thumbs">${imgs.map((s, i) => `<button data-img="${esc(s)}" aria-label="Image ${i + 1}" aria-current="${i === 0}"><img src="${esc(s)}" alt=""></button>`).join("")}</div>` : ""}</div>` : ""}
-    <div class="dlg-body" data-t="${t}">
-      <div class="dlg-head">
-        <p class="meta">${t !== "other" ? `<span class="kind" data-t="${t}">${esc(d.label.toLowerCase())}</span>` : ""}${p.year ? `<span>${esc(p.year)}</span>` : ""}</p>
-        <h2 id="dlg-title">${esc(p.title)}</h2>
-        ${state(p)}
-      </div>
-      <div class="dlg-info">${factsHtml}${tagsHtml}</div>
-      ${lead}
-      ${rest}
-      ${links ? `<p class="dlg-links">${links}</p>` : ""}
-    </div>`;
-  $("#dlg").showModal();
-  history.replaceState(null, "", "#" + encodeURIComponent(id));
 }
 
 /* ---------- CV ---------- */
@@ -309,14 +280,19 @@ function renderCV() {
       <div class="skill-card"><h3>${esc(g.label)}</h3>${chips(g.items || [])}</div>`).join("")}</div>` : "")
     + (langs.length ? `<h3 class="h-sub">Langues</h3><ul class="langs">${langs.map(l => `<li><span>${esc(l.name.trim())}</span>${l.level ? `<span class="lvl">${esc(l.level)}</span>` : ""}</li>`).join("")}</ul>` : "");
   $("#cv-skills").innerHTML = skillsHtml || '<p class="empty">Rien à afficher pour l\'instant.</p>';
-  $("#cv-interests").innerHTML = interests.length
+    $("#cv-interests").innerHTML = interests.length
     ? `<div class="skills">${interests.map(i => `<div class="skill-card"><h3>${esc(i.label)}</h3>${i.description ? `<div class="prose">${paras(i.description)}</div>` : ""}</div>`).join("")}</div>`
+    : '<p class="empty">Rien à afficher pour l\'instant.</p>';
+  const about = (c.about || []).filter(b => (b.title || "").trim() || (b.text || "").trim());
+  $("#cv-about").innerHTML = about.length
+    ? `<div class="skills">${about.map(b => `<div class="skill-card">${b.title ? `<h3>${esc(b.title)}</h3>` : ""}<div class="prose">${paras(b.text)}</div></div>`).join("")}</div>`
     : '<p class="empty">Rien à afficher pour l\'instant.</p>';
 
   $("#count-experience").textContent = exp.length || "";
   $("#count-education").textContent = edu.length || "";
   $("#count-skills").textContent = skills.length || "";
   $("#count-interests").textContent = interests.length || "";
+  $("#count-about").textContent = about.length || "";
   $$(".count").forEach(c => { c.hidden = !c.textContent; });
 }
 
@@ -337,18 +313,6 @@ $("#filters").addEventListener("click", e => {
   else if (b.dataset.tag) activeTag = activeTag === b.dataset.tag ? null : b.dataset.tag;
   renderFilters(); renderList();
 });
-$("#list").addEventListener("click", e => {
-  const b = e.target.closest("[data-id]"); if (b) openProject(b.dataset.id);
-});
-$("#dlg").addEventListener("click", e => {
-  if (e.target === e.currentTarget || e.target.closest("[data-close]")) e.currentTarget.close();
-  const t = e.target.closest("[data-img]");
-  if (t) {
-    $("#big").src = t.dataset.img;
-    $$(".thumbs button").forEach(x => x.setAttribute("aria-current", x === t));
-  }
-});
-$("#dlg").addEventListener("close", () => history.replaceState(null, "", location.pathname + location.search));
 
 load();
 </script>
