@@ -17,7 +17,7 @@
   "projects": [
     {
       "id": "proportionate-response-journey",
-      "title": "Proportionate Response Journey",
+      "title": "Proportional Response Journey",
       "type": "game",
       "year": "2026",
       "summary": "",
@@ -30,10 +30,18 @@
         "role": "Programmation, Game Design",
         "team": "Binôme ",
         "pitch": "Incarnez un CRS durant une manifestation violente et trouvez votre chemin dans les rues pour retrouver vos camarades afin de mener une offensive",
-        "duration": "2 semaines"
+        "duration": "2 semaines",
+        "contribution": [
+          "Génération procédurale du Noise pour le spawn des débris",
+          "Spawn des débris",
+          "Animations du policier",
+          "PlayerBrain/Movements",
+          "Système de spawn de props a des endroits précis"
+        ]
       },
       "tags": [
-        "c#"
+        "c#",
+        "Procédural"
       ],
       "ongoing": true,
       "link": "",
