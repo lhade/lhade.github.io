@@ -16,6 +16,26 @@
   },
   "projects": [
     {
+      "id": "mimind",
+      "title": "MIMIND",
+      "type": "app",
+      "year": "2026",
+      "summary": "",
+      "description": "",
+      "details": {
+        "stack": "React,Typescript,PostGre",
+        "kind": "Webapp",
+        "audience": "Moi même ",
+        "role": "Tout",
+        "team": "Seul"
+      },
+      "tags": [],
+      "ongoing": true,
+      "link": "",
+      "repo": "",
+      "images": []
+    },
+    {
       "id": "proportionate-response-journey",
       "title": "Proportional Response Journey",
       "type": "game",
