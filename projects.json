@@ -20,14 +20,17 @@
       "title": "MIMIND",
       "type": "app",
       "year": "2026",
-      "summary": "",
+      "summary": "Webapp d’organisation visuelle et de structuration de pensées via des tableaux interactifs ",
       "description": "",
       "details": {
         "stack": "React,Typescript,PostGre",
         "kind": "Webapp",
         "audience": "Moi même ",
         "role": "Tout",
-        "team": "Seul"
+        "team": "Seul",
+        "context": "J’avais besoin d’un endroit où stockées les idées, ressources, inspirations, objectifs pour chaque projets, les outils proposés actuels sur le marchés sont limités lorsque l’ont ne paie pas, j’ai donc décider de créer le mien pour qu’il réponde parfaitement à mes besoins en plus d’être gratuit à l’utilisation \nLa possibilité de rendre certains tableaux visibles/editables en fonction de la personne connectée pour le travail sur des projets à plusieurs est aussi envisagé",
+        "problem": "Avoir une alternative gratuite et tout-en-un des applications telles que trello, milanote, etc\nEt surtout une alternative totalement personnalisée ",
+        "solution": "L’application pourra s’adapter à tous mes besoins d’organisation ou de réflexions qu’ils soient professionnels ou personnels\nLe seul coût réel sera l’hébergement "
       },
       "tags": [],
       "ongoing": true,
