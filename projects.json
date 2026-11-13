@@ -16,6 +16,22 @@
   },
   "projects": [
     {
+      "id": "disco-dummy-unpaid",
+      "title": "Disco Dummy Unpaid",
+      "type": "game",
+      "year": "2026",
+      "summary": "",
+      "description": "",
+      "details": {},
+      "tags": [],
+      "ongoing": true,
+      "link": "",
+      "repo": "",
+      "images": [
+        "images/disco-dummy-unpaid-mwet5kbo5g3.jpg"
+      ]
+    },
+    {
       "id": "mimind",
       "title": "MIMIND",
       "type": "app",
