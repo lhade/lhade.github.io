@@ -20,9 +20,13 @@
       "title": "Disco Dummy Unpaid",
       "type": "game",
       "year": "2026",
-      "summary": "",
+      "summary": "Un jeu de combat rythmé",
       "description": "",
-      "details": {},
+      "details": {
+        "engine": "Unity",
+        "genre": "Action, Rythme",
+        "duration": "10 jours"
+      },
       "tags": [],
       "ongoing": true,
       "link": "",
