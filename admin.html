@@ -299,11 +299,17 @@ async function prepImage(file) {
   const c = document.createElement("canvas");
   c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
   const ctx = c.getContext("2d");
-  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height);
-  ctx.drawImage(bmp, 0, 0, c.width, c.height);
-  const blob = await new Promise(r => c.toBlob(r, "image/jpeg", .86));
+  ctx.drawImage(bmp, 0, 0, c.width, c.height);   /* on ne remplit plus le fond : la transparence est conservée */
+  /* l'image a-t-elle de la transparence ? (au moins un pixel pas totalement opaque) */
+  const px = ctx.getImageData(0, 0, c.width, c.height).data;
+  let transparent = false;
+  for (let i = 3; i < px.length; i += 4) if (px[i] < 255) { transparent = true; break; }
+  /* avec transparence : WebP (garde la transparence, léger) ; sinon JPEG léger.
+     Si le navigateur ne sait pas écrire du WebP, il renvoie du PNG : on s'adapte au format obtenu. */
+  const blob = await new Promise(r => transparent ? c.toBlob(r, "image/webp", .92) : c.toBlob(r, "image/jpeg", .86));
+  const ext = blob.type === "image/webp" ? "webp" : blob.type === "image/png" ? "png" : "jpg";
   const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result.split(",")[1]); fr.readAsDataURL(blob); });
-  return { b64, url: URL.createObjectURL(blob) };
+  return { b64, url: URL.createObjectURL(blob), ext };
 }
 function dropImage(path) {
   const im = pending[path];
@@ -368,7 +374,7 @@ $("#editor").addEventListener("change", async e => {
   for (const file of e.target.files) {
     try {
       const im = await prepImage(file);
-      const path = `images/${p.id}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}.jpg`;
+      const path = `images/${p.id}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}.${im.ext}`;
       pending[path] = im;
       p.images.push(path);
     } catch { setStatus("Image illisible : " + file.name, "err"); return; }
