@@ -21,18 +21,30 @@
       "type": "game",
       "year": "2026",
       "summary": "Un jeu de combat rythmé",
-      "description": "",
+      "description": "Vous incarnez un mannequin d'exposition rendu vivant par le pouvoir de la musique. Après des années a exposer en vitrine des vêtements vous vous rendez compte que vous n'avez pas touché un seul centime pour ce travail. La justice est trop longue et les mannequins n'ont malheureusement aucun droit... \nExercez votre vengeance par les poings au rythme du son qui vous a donné la vie.",
       "details": {
         "engine": "Unity",
         "genre": "Action, Rythme",
-        "duration": "10 jours"
+        "duration": "10 jours",
+        "platforms": "PC",
+        "mode": "Solo",
+        "role": "Porgrammation de certaines mécaniques, Game design, Shaders, Particules, Certains arts",
+        "team": "Binôme",
+        "mechanics": [
+          "Jeu de combat",
+          "Rythme musical pour dicter le tempo du combat"
+        ]
       },
-      "tags": [],
+      "tags": [
+        "C#"
+      ],
       "ongoing": true,
       "link": "",
       "repo": "",
       "images": [
-        "images/disco-dummy-unpaid-mwjnszkqneo.webp"
+        "images/disco-dummy-unpaid-mwjnszkqneo.webp",
+        "images/disco-dummy-unpaid-mwqr99pr7tn.jpg",
+        "images/disco-dummy-unpaid-mwqr99oh8wn.jpg"
       ]
     },
     {
